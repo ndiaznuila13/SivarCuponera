@@ -59,9 +59,9 @@ const cupones = [
 ]
 
 const categorias = [
-  { nombre: "Comida", icono: "restaurant", activa: true },
-  { nombre: "Servicios", icono: "handyman", activa: false },
-  { nombre: "Productos", icono: "inventory_2", activa: false },
+  { nombre: "Comida", activa: true },
+  { nombre: "Servicios", activa: false },
+  { nombre: "Productos", activa: false },
 ]
 
 function Header() {
@@ -70,7 +70,6 @@ function Header() {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-2 text-[#007BA7]">
-            <span className="material-symbols-outlined text-3xl font-bold">confirmation_number</span>
             <h2 className="text-[#002147] text-xl font-bold tracking-tight">Sivar Cuponera</h2>
           </div>
         </div>
@@ -101,7 +100,6 @@ function Hero() {
           Encuentra tu oferta en miles de tiendas al instante
         </p>
         <div className="flex items-center bg-white rounded-lg p-2 max-w-xl mx-auto shadow-lg">
-          <span className="material-symbols-outlined text-slate-400 ml-2">search</span>
           <input
             type="text"
             placeholder="Buscar tiendas o marcas..."
@@ -127,7 +125,6 @@ function Sidebar() {
   return (
     <aside className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm h-fit">
       <div className="flex items-center gap-2 mb-6">
-        <span className="material-symbols-outlined text-[#007BA7]">grid_view</span>
         <h3 className="font-bold text-[#002147]">Categorías</h3>
       </div>
       <ul className="space-y-2">
@@ -141,7 +138,6 @@ function Sidebar() {
                   : "text-slate-600 hover:bg-slate-50"
               }`}
             >
-              <span className="material-symbols-outlined text-xl">{cat.icono}</span>
               <span>{cat.nombre}</span>
             </a>
           </li>
@@ -156,7 +152,6 @@ function CuponCard({ cupon }) {
     <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start gap-4">
         <div className="w-14 h-14 bg-slate-100 rounded-lg flex items-center justify-center shrink-0">
-          <span className="material-symbols-outlined text-slate-500">storefront</span>
         </div>
         <div className="flex-1">
           {cupon.etiqueta && (
@@ -183,7 +178,6 @@ function CuponesGrid() {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-bold text-[#002147]">Mejores Ofertas para Ti</h2>
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-slate-400">tune</span>
           <select className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600">
             <option>Más Populares</option>
             <option>Más Recientes</option>
@@ -212,7 +206,6 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center gap-2 text-[#007BA7] mb-4">
-              <span className="material-symbols-outlined text-2xl">confirmation_number</span>
               <h2 className="text-[#002147] text-lg font-bold">Sivar Cuponera</h2>
             </div>
             <p className="text-sm text-slate-500">
