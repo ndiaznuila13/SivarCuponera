@@ -1,4 +1,10 @@
 import './App.css'
+import cafeImg from './assets/img-cupones/cafe.webp';
+import gorrasImg from './assets/img-cupones/gorras.jpg';
+import maquillajeImg from './assets/img-cupones/maquillaje.jpg';
+import mascotasImg from './assets/img-cupones/mascotas.jpg';
+import radioImg from './assets/img-cupones/radio.webp';
+import zapatosImg from './assets/img-cupones/zapatosSportline.webp';
 
 // Datos de ejemplo para los cupones
 const cupones = [
@@ -6,6 +12,7 @@ const cupones = [
     id: 1,
     descuento: "2x1 en zapatos",
     tienda: "Sportline",
+    imagen: zapatosImg,
     descripcion: "No pierdas la oportunidad de ahorrar en tu próxima compra deportiva.",
     etiqueta: "Tiempo Limitado",
     etiquetaColor: "bg-green-100 text-green-700",
@@ -15,6 +22,7 @@ const cupones = [
     id: 2,
     descuento: "20% de descuento",
     tienda: "RadioShack",
+    imagen: radioImg,
     descripcion: "Opten 20% de descuento en toda la tienda, válido solo para compras en línea.",
     etiqueta: "En tendencia",
     etiquetaColor: "bg-red-100 text-red-600",
@@ -24,6 +32,7 @@ const cupones = [
     id: 3,
     descuento: "Bebida grande",
     tienda: "Starbucks",
+    imagen: cafeImg,
     descripcion: "Agranda tu bebida por el precio de una. Oferta válida solo hoy.",
     etiqueta: "Expira pronto",
     etiquetaColor: "bg-orange-100 text-orange-600",
@@ -33,6 +42,7 @@ const cupones = [
     id: 4,
     descuento: "15% de descuento",
     tienda: "Siman",
+    imagen: maquillajeImg,
     descripcion: "Ahorra en tus compras de maquillaje y cuidado personal. ",
     etiqueta: null,
     etiquetaColor: "",
@@ -42,6 +52,7 @@ const cupones = [
     id: 5,
     descuento: "Segunda unidad al 50%",
     tienda: "New Era",
+    imagen: gorrasImg,
     descripcion: "Compre tu gorra de tu equipo favorito y obtén la segunda al 50% de descuento",
     etiqueta: null,
     etiquetaColor: "",
@@ -51,6 +62,7 @@ const cupones = [
     id: 6,
     descuento: "10% de descuento en mascotas",
     tienda: "Walmart",
+    imagen: mascotasImg,
     descripcion: "Obten un 10% de descuento en productos para mascotas. ",
     etiqueta: "¡Guau!",
     etiquetaColor: "bg-green-100 text-green-600",
@@ -132,11 +144,10 @@ function Sidebar() {
           <li key={cat.nombre}>
             <a
               href="#"
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                cat.activa
-                  ? "bg-[#E0F2F7] text-[#007BA7] font-bold"
-                  : "text-slate-600 hover:bg-slate-50"
-              }`}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${cat.activa
+                ? "bg-[#E0F2F7] text-[#007BA7] font-bold"
+                : "text-slate-600 hover:bg-slate-50"
+                }`}
             >
               <span>{cat.nombre}</span>
             </a>
@@ -151,7 +162,12 @@ function CuponCard({ cupon }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start gap-4">
-        <div className="w-14 h-14 bg-slate-100 rounded-lg flex items-center justify-center shrink-0">
+        <div className="w-24 h-24 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+          <img
+            src={cupon.imagen}
+            alt={cupon.tienda}
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="flex-1">
           {cupon.etiqueta && (
@@ -185,7 +201,7 @@ function CuponesGrid() {
           </select>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {cupones.map((cupon) => (
           <CuponCard key={cupon.id} cupon={cupon} />
         ))}
