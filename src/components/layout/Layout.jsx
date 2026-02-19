@@ -8,7 +8,7 @@ export default function Layout({ children }) {
       <Header />
       
       {/* Contenido principal - crece para empujar el footer al fondo */}
-      <main className="flex-grow">
+      <main className="grow">
         {children}
       </main>
       

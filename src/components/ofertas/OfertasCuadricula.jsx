@@ -75,23 +75,24 @@ const cupones = [
 export default function OfertasCuadricula() {
   return (
     <div className="flex-1">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-        <h2 className="text-xl font-bold text-[#002147]">Mejores Ofertas para Ti</h2>
-        <div className="flex items-center gap-2">
-          <select className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 bg-white">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
+        <h2 className="text-lg sm:text-xl font-bold text-oxford-navy">Mejores Ofertas para Ti</h2>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <select className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 bg-white w-full sm:w-auto">
             <option>Más Populares</option>
             <option>Más Recientes</option>
             <option>Mayor Descuento</option>
           </select>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Grid: 1 columna en móvil, 2 en tablet/desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {cupones.map((cupon) => (
           <OfertaCard key={cupon.id} cupon={cupon} />
         ))}
       </div>
-      <div className="flex justify-center mt-8">
-        <button className="px-8 py-3 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50 transition-colors">
+      <div className="flex justify-center mt-6 sm:mt-8">
+        <button className="px-6 sm:px-8 py-2.5 sm:py-3 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50 transition-colors text-sm sm:text-base">
           Cargar Más Ofertas
         </button>
       </div>

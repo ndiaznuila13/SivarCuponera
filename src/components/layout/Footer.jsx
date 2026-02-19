@@ -2,7 +2,7 @@ export default function Footer() {
   const añoActual = new Date().getFullYear()
 
   return (
-    <footer className="bg-[#002147] text-white mt-auto">
+    <footer className="bg-oxford-navy text-white mt-auto">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           
@@ -10,14 +10,14 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <svg 
-                className="w-8 h-8 text-[#007BA7]" 
+                className="w-8 h-8 text-primary" 
                 fill="currentColor" 
                 viewBox="0 0 20 20"
               >
                 <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
               </svg>
               <span className="text-xl font-bold">
-                Sivar<span className="text-[#007BA7]">Cuponera</span>
+                Sivar<span className="text-primary">Cuponera</span>
               </span>
             </div>
             <p className="text-slate-300 text-sm leading-relaxed">
@@ -28,7 +28,7 @@ export default function Footer() {
             <div className="flex space-x-4">
               <a 
                 href="#" 
-                className="hover:text-[#007BA7] transition-colors"
+                className="hover:text-primary transition-colors"
                 aria-label="Facebook"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@ export default function Footer() {
               </a>
               <a 
                 href="#" 
-                className="hover:text-[#007BA7] transition-colors"
+                className="hover:text-primary transition-colors"
                 aria-label="Instagram"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -46,7 +46,7 @@ export default function Footer() {
               </a>
               <a 
                 href="#" 
-                className="hover:text-[#007BA7] transition-colors"
+                className="hover:text-primary transition-colors"
                 aria-label="Twitter"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -58,7 +58,7 @@ export default function Footer() {
 
           {/* Columna 2: Enlaces rápidos */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-[#007BA7]">
+            <h3 className="text-lg font-semibold mb-4 text-primary">
               Enlaces Rápidos
             </h3>
             <ul className="space-y-2">
@@ -99,7 +99,7 @@ export default function Footer() {
 
           {/* Columna 3: Para empresas */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-[#007BA7]">
+            <h3 className="text-lg font-semibold mb-4 text-primary">
               Para Empresas
             </h3>
             <ul className="space-y-2">
@@ -140,12 +140,12 @@ export default function Footer() {
 
           {/* Columna 4: Contacto */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-[#007BA7]">
+            <h3 className="text-lg font-semibold mb-4 text-primary">
               Contacto
             </h3>
             <ul className="space-y-3 text-sm text-slate-300">
               <li className="flex items-start space-x-2">
-                <svg className="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
