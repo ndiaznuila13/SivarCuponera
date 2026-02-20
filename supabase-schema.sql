@@ -73,7 +73,6 @@ CREATE TABLE clientes (
 CREATE TABLE cupones (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   codigo VARCHAR(13) NOT NULL UNIQUE, -- Formato: código empresa (6) + 7 dígitos random
-  oferta_id UUID REFERENCES ofertas(id) ON DELETE RESTRICT,
   cliente_id UUID REFERENCES clientes(id) ON DELETE RESTRICT,
   fecha_compra TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   fecha_canje TIMESTAMP WITH TIME ZONE,
