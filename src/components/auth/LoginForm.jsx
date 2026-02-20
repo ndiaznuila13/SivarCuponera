@@ -60,7 +60,7 @@ export default function LoginForm() {
 
   return (
     <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold text-[#002147] mb-6">
+      <h2 className="text-2xl font-bold text-oxford-navy mb-6">
         {esRegistro ? 'Crear Cuenta' : 'Iniciar Sesión'}
       </h2>
 
@@ -75,7 +75,7 @@ export default function LoginForm() {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#007BA7] focus:border-transparent"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             placeholder="tu@email.com"
           />
         </div>
@@ -91,7 +91,7 @@ export default function LoginForm() {
             onChange={handleChange}
             required
             minLength={6}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#007BA7] focus:border-transparent"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
             placeholder="••••••••"
           />
         </div>
@@ -109,7 +109,7 @@ export default function LoginForm() {
                   value={formData.nombres}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#007BA7] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -122,7 +122,7 @@ export default function LoginForm() {
                   value={formData.apellidos}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#007BA7] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -139,7 +139,7 @@ export default function LoginForm() {
                 required
                 pattern="[0-9]{9}"
                 maxLength={9}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#007BA7] focus:border-transparent"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="012345678"
               />
             </div>
@@ -153,7 +153,7 @@ export default function LoginForm() {
                 name="telefono"
                 value={formData.telefono}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#007BA7] focus:border-transparent"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 placeholder="2222-3333"
               />
             </div>
@@ -167,7 +167,7 @@ export default function LoginForm() {
                 value={formData.direccion}
                 onChange={handleChange}
                 rows={2}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#007BA7] focus:border-transparent"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
           </>
@@ -188,7 +188,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-[#002147] text-white font-bold rounded-lg hover:bg-[#003366] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading
             ? 'Procesando...'
@@ -204,7 +204,7 @@ export default function LoginForm() {
             setEsRegistro(!esRegistro)
             setMensaje('')
           }}
-          className="text-sm text-[#007BA7] hover:underline"
+          className="text-sm text-primary hover:underline"
         >
           {esRegistro
             ? '¿Ya tienes cuenta? Inicia sesión'
