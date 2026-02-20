@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="bg-gradient-to-r from-[#002147] to-[#004d7a] py-16">
+    <section className="bg-gradient-to-r from-slate-900 to-blue-900 py-16">
       <div className="max-w-4xl mx-auto px-4 text-center">
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
           Ahorra más en cada compra
