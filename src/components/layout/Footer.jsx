@@ -11,7 +11,7 @@ export default function Footer() {
             <div className="flex items-center space-x-2">
 
               <span className="text-2xl font-bold">
-                Sivar<span className="text-primary">Cuponera</span>
+                Sivar<span className="text-cyan-400">Cuponera</span>
               </span>
             </div>
             <p className="text-slate-300 text-sm leading-relaxed">
