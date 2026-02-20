@@ -14,7 +14,7 @@ export default function Hero() {
             placeholder="Buscar tiendas o marcas..."
             className="flex-1 px-4 py-2 border-none outline-none text-slate-700"
           />
-          <button className="px-6 py-2 bg-[#007BA7] text-white font-bold rounded-lg hover:bg-[#006691] transition-colors">
+          <button className="px-6 py-2 bg-cyan-600 text-white font-bold rounded-lg hover:bg-cyan-700 transition-colors">
             Buscar
           </button>
         </div>
