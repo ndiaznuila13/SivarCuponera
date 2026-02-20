@@ -1,5 +1,6 @@
 const categorias = [
-  { nombre: "Comida", activa: true },
+  { nombre: "Todas", activa: true },
+  { nombre: "Comida", activa: false },
   { nombre: "Servicios", activa: false },
   { nombre: "Productos", activa: false },
 ]
