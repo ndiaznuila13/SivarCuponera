@@ -11,30 +11,33 @@ function CuponCard({ oferta }) {
     const handleComprar = async () => {
         setComprando(true);
 
-        // Obtener sesión actual
         const { data: { session } } = await supabase.auth.getSession();
+        const userId = session.user.id;
 
         if (!session) {
             navigate('/login');
             return;
         }
 
+        try {
+            await registrarCompra(oferta, userId);
+        } catch (error) {
+            console.error(error);
+        }
+
+        setComprando(false);
+    };
+
+    const registrarCompra = async (cupon, userId) => {
         const { error } = await supabase
             .from('CuponesComprados')
             .insert({
-                id_cupones: oferta.id_cupones,
-                id: session.user.id,
+                id_cupones: cupon.id_cupones,
+                id: userId,
                 estado: 'Vigente'
             });
 
-        if (error) {
-            console.error(error);
-            setComprando(false);
-            return;
-        }
-
-        // Compra exitosa
-        setComprando(false);
+        if (error) throw error;
     };
 
     return (
