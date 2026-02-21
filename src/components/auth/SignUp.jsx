@@ -1,9 +1,10 @@
 import React from 'react'
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function SignUp() {
+    const navigate = useNavigate();
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -65,7 +66,8 @@ export default function SignUp() {
         }
 
         // 3. Registro exitoso
-        // Redirigir o mostrar mensaje de confirmación
+        navigate('/'); // Redirigir al home 
+       
     };
 
     return (

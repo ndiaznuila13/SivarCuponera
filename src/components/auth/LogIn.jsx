@@ -1,9 +1,10 @@
 import React from 'react'
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function LogIn() {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -29,6 +30,7 @@ export default function LogIn() {
 
         // Login exitoso, redirigir
         setLoading(false);
+        navigate('/');
     };
 
     return (

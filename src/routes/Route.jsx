@@ -14,7 +14,7 @@ function AppRoutes() {
 				<Route path="/login" element={<LogIn />} />
 				<Route path="/signup" element={<SignUp />} />
 
-				<Route path="/" element={<ProtectedRoute />}>
+				<Route element={<ProtectedRoute />}>
 					<Route path="/" element={<App />} />
 					<Route path="/pago" element={<PagoCupon />} />
 					<Route path="/miscupones" element={<MisCuponesComprados />} />
