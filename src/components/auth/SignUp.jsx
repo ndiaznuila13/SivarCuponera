@@ -28,46 +28,52 @@ export default function SignUp() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
 
-        // 1. Verificar DUI duplicado antes de intentar registrar
-       /** */// const { data: duiExistente } = await supabase
-           // .from('Usuarios')
-            //.select('id')
-            //.eq('dui', formData.dui)
-            //.maybeSingle();
-
-       // if (duiExistente) {
-            //setError('El DUI ya está registrado.');
-           // return;
-       // }  
-
-        // 2. Intentar registro en Auth
-        const { error } = await supabase.auth.signUp({
-            email: formData.email,
-            password: formData.password,
-            options: {
-                data: {
-                    nombres: formData.nombres,
-                    apellidos: formData.apellidos,
-                    telefono: formData.telefono,
-                    dui: formData.dui,
-                }
-            }
-        });
-
-        if (error) {
-            // Supabase retorna este mensaje cuando el email ya existe
-            if (error.message.includes('already registered')) {
-                setError('El correo ya está registrado.');
-            } else {
-                setError('Ocurrió un error. Intenta de nuevo.');
-            }
+        if (formData.password.length < 6) {
+            setError('La contraseña debe tener al menos 6 caracteres.');
             return;
         }
 
-        // 3. Registro exitoso
-        navigate('/'); // Redirigir al home 
-       
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email: formData.email,
+                password: formData.password,
+                options: {
+                    data: {
+                        nombres: formData.nombres,
+                        apellidos: formData.apellidos,
+                        telefono: formData.telefono,
+                        dui: formData.dui,
+                    }
+                }
+            });
+
+            if (error) {
+                console.error('Error de Supabase:', error);
+                
+                if (error.message.includes('already registered') || error.message.includes('User already registered')) {
+                    setError('El correo ya está registrado.');
+                } else if (error.message.includes('Invalid login credentials')) {
+                    setError('Credenciales inválidas.');
+                } else if (error.message.includes('Password should be at least 6 characters')) {
+                    setError('La contraseña debe tener al menos 6 caracteres.');
+                } else if (error.message.includes('Unable to validate email address')) {
+                    setError('El formato del correo es inválido.');
+                } else {
+                    setError(`Error: ${error.message}`);
+                }
+                return;
+            }
+
+            console.log('Registro exitoso:', data);
+            alert('¡Registro exitoso! Revisa tu correo para confirmar tu cuenta.');
+            navigate('/login');
+            
+        } catch (err) {
+            console.error('Error inesperado:', err);
+            setError('Error de conexión. Verifica tu configuración de Supabase.');
+        }
     };
 
     return (
@@ -225,14 +231,15 @@ export default function SignUp() {
 
                         </div>
 
-                        {/* Botón */}
                         {error && (
-                            <p className="text-red-500 text-sm">{error}</p>
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                                <p className="text-red-600 text-sm font-medium">{error}</p>
+                            </div>
                         )}
+
                         <button
                             type="submit"
                             className="w-full bg-[var(--color-primary)] hover:opacity-90 text-white font-semibold py-3 rounded-lg transition duration-200 hover:cursor-pointer"
-
                         >
                             Registrarse
                         </button>

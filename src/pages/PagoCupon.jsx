@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { comprarCupon } from '../lib/api';
-
-function getPrecioFromQuery(search) {
-  const params = new URLSearchParams(search);
-  return params.get('precio') || '--.--';
-}
 
 const PagoCupon = () => {
   const [success, setSuccess] = useState(false);
   const [codigo, setCodigo] = useState('');
   const [errorFecha, setErrorFecha] = useState('');
   const location = useLocation();
-  const precio = getPrecioFromQuery(location.search);
   const navigate = useNavigate();
+  
+  const { id_cupon, precio } = location.state || {};
 
   const generarCodigo = () => {
     let code = '';
@@ -29,7 +24,7 @@ const PagoCupon = () => {
     setErrorFecha('');
     const formData = new FormData(e.target);
     const fecha = formData.get('fecha');
-    // Validar formato MM/AA
+    
     const match = /^\d{2}\/\d{2}$/.test(fecha);
     if (!match) {
       setErrorFecha('La fecha debe estar en formato MM/AA');
@@ -45,8 +40,12 @@ const PagoCupon = () => {
       setErrorFecha(`El año debe ser igual o mayor a ${actual.toString().padStart(2, '0')} y menor a 100`);
       return;
     }
-    // Aquí debes obtener el id_cupon de la oferta seleccionada
-    const id_cupon = location.state?.id_cupon || null;
+    
+    if (!id_cupon) {
+      setErrorFecha('No se encontró el cupón seleccionado');
+      return;
+    }
+
     const compra = await comprarCupon(id_cupon);
     if (compra.success) {
       setSuccess(true);
@@ -59,7 +58,7 @@ const PagoCupon = () => {
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
       <h2 className="text-2xl font-bold mb-4 text-center">Pagar Cupón</h2>
-      <div className="text-lg font-semibold mb-4 text-center">Precio: <span className="text-primary">${precio}</span></div>
+      <div className="text-lg font-semibold mb-4 text-center">Precio: <span className="text-primary">${precio?.toFixed(2) || '0.00'}</span></div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <label className="block font-medium">
           Nombre del titular

@@ -10,16 +10,14 @@ function AppRoutes() {
 	return (
 		<BrowserRouter>
 			<Routes>
-
 				<Route path="/login" element={<LogIn />} />
 				<Route path="/signup" element={<SignUp />} />
 
 				<Route element={<ProtectedRoute />}>
 					<Route path="/" element={<App />} />
-					<Route path="/pago" element={<PagoCupon />} />
-					<Route path="/miscupones" element={<MisCuponesComprados />} />
+					<Route path="/pago-cupon" element={<PagoCupon />} />
+					<Route path="/mis-cupones-comprados" element={<MisCuponesComprados />} />
 				</Route>
-
 			</Routes>
 		</BrowserRouter>
 	);
