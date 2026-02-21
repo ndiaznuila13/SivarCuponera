@@ -96,8 +96,17 @@ const MisCuponesComprados = () => {
                 </div>
               </div>
 
-              <div className="mt-2 sm:mt-0 font-mono text-gray-700 text-base">
-                Código: {cupon.codigo || 'N/A'}
+              <div className="mt-2 sm:mt-0 flex flex-col items-end gap-2">
+                <div className="font-mono text-gray-700 text-base">
+                  Código: {cupon.codigo || 'N/A'}
+                </div>
+
+                <button
+                  className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:opacity-90"
+                  onClick={() => alert('Función de descarga PDF pendiente')}
+                >
+                  Descargar PDF
+                </button>
               </div>
             </li>
           );
