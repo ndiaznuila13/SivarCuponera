@@ -1,3 +1,16 @@
+// Insertar cupon comprado
+export const insertarCuponComprado = async ({ id_cupo, codigo, estado }) => {
+  try {
+    const { data, error } = await supabase
+      .from('cuponesComprados')
+      .insert([{ id_cupo, codigo, estado }]);
+    if (error) throw error;
+    return { success: true, data };
+  } catch (error) {
+    console.error('Error al insertar cupon comprado:', error);
+    return { success: false, error: error.message };
+  }
+};
 import { supabase } from './supabase'
 
 // =====================================================

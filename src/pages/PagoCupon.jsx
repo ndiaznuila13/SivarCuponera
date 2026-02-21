@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { comprarCupon } from '../lib/api';
 
 function getPrecioFromQuery(search) {
   const params = new URLSearchParams(search);
@@ -23,7 +24,7 @@ const PagoCupon = () => {
     return code;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorFecha('');
     const formData = new FormData(e.target);
@@ -44,8 +45,15 @@ const PagoCupon = () => {
       setErrorFecha(`El año debe ser igual o mayor a ${actual.toString().padStart(2, '0')} y menor a 100`);
       return;
     }
-    setSuccess(true);
-    setCodigo(generarCodigo());
+    // Aquí debes obtener el id_cupon de la oferta seleccionada
+    const id_cupon = location.state?.id_cupon || null;
+    const compra = await comprarCupon(id_cupon);
+    if (compra.success) {
+      setSuccess(true);
+      setCodigo(compra.data.codigo || generarCodigo());
+    } else {
+      setErrorFecha(compra.error || 'Error al registrar la compra');
+    }
   };
 
   return (
