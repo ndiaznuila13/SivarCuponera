@@ -12,6 +12,13 @@ export default function LogIn() {
         password: '',
     });
 
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    }
+ 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -72,6 +79,8 @@ export default function LogIn() {
                                 placeholder="correo@email.com"
                                 required
                                 name="email"
+                                value = {formData.email}
+                                onChange={handleChange}
                                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                             />
                         </div>
@@ -87,6 +96,8 @@ export default function LogIn() {
                                     type={showPassword ? "text" : "password"}
                                     required
                                     name="password"
+                                    value = {formData.password}
+                                    onChange={handleChange}
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
 
