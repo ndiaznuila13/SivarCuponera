@@ -1,145 +1,111 @@
 import { supabase } from './supabase'
 
-/**
- * Obtener todas las ofertas aprobadas y vigentes
- * @param {string} rubroId - Opcional: filtrar por rubro específico
- * @returns {Promise<Array>} Lista de ofertas
- */
-export const obtenerOfertasActivas = async (rubroId = null) => {
-  try {
-    let query = supabase
-      .from('ofertas')
-      .select(`
-        *,
-        empresas (
-          id,
-          nombre,
-          codigo,
-          rubros (
-            id,
-            nombre,
-            icono
-          )
-        )
-      `)
-      .eq('estado', 'aprobada')
-      .lte('fecha_inicio', new Date().toISOString())
-      .gte('fecha_fin', new Date().toISOString())
+// =====================================================
+// FUNCIONES DE CÁLCULO (solo para mostrar en UI)
+// =====================================================
 
-    if (rubroId) {
-      query = query.eq('empresas.rubro_id', rubroId)
-    }
-
-    const { data, error } = await query
-
-    if (error) throw error
-
-    // Filtrar ofertas que no hayan alcanzado el límite
-    const ofertasDisponibles = data.filter((oferta) => {
-      return !oferta.cantidad_limite || oferta.cantidad_vendida < oferta.cantidad_limite
-    })
-
-    return { success: true, data: ofertasDisponibles }
-  } catch (error) {
-    console.error('Error al obtener ofertas:', error)
-    return { success: false, error: error.message }
-  }
+export const calcularDescuento = (precioRegular, precioOferta) => {
+  if (!precioRegular || !precioOferta) return 0
+  return Math.round(((precioRegular - precioOferta) / precioRegular) * 100)
 }
 
-/**
- * Obtener todos los rubros activos
- * @returns {Promise<Array>} Lista de rubros
- */
+export const calcularDiasRestantes = (fechaFin) => {
+  const hoy = new Date()
+  const fin = new Date(fechaFin)
+  const diferencia = fin - hoy
+  return Math.ceil(diferencia / (1000 * 60 * 60 * 24))
+}
+
+export const formatearFecha = (fecha) => {
+  return new Date(fecha).toLocaleDateString('es-SV', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
+// =====================================================
+// CONSULTAS A SUPABASE (nombres correctos de tablas)
+// =====================================================
+
+// Obtener categorías
 export const obtenerRubros = async () => {
   try {
     const { data, error } = await supabase
-      .from('rubros')
+      .from('Categorias')
       .select('*')
-      .eq('activo', true)
       .order('nombre')
 
     if (error) throw error
 
     return { success: true, data }
   } catch (error) {
-    console.error('Error al obtener rubros:', error)
+    console.error('Error al obtener categorías:', error)
     return { success: false, error: error.message }
   }
 }
 
-/**
- * Obtener detalles de una oferta específica
- * @param {string} ofertaId - UUID de la oferta
- * @returns {Promise<Object>} Detalles de la oferta
- */
-export const obtenerOferta = async (ofertaId) => {
+// Obtener cupones activos con filtro opcional por categoría
+export const obtenerOfertasActivas = async (categoriaId = null) => {
   try {
-    const { data, error } = await supabase
-      .from('ofertas')
+    const hoy = new Date().toISOString()
+
+    let query = supabase
+      .from('Cupones')
       .select(`
         *,
-        empresas (
-          id,
-          nombre,
-          codigo,
-          direccion,
-          telefono,
-          rubros (
-            id,
-            nombre,
-            icono
-          )
+        Categorias:id_categoria (
+          id_categoria,
+          nombre
         )
       `)
-      .eq('id', ofertaId)
+      .lte('fecha_inicio', hoy)
+      .gte('fecha_fin', hoy)
+      .gt('cantidad_cupon', 0)
+
+    // Filtrar por categoría si se especifica
+    if (categoriaId) {
+      query = query.eq('id_categoria', categoriaId)
+    }
+
+    const { data, error } = await query.order('fecha_inicio', { ascending: false })
+
+    if (error) throw error
+
+    return { success: true, data }
+  } catch (error) {
+    console.error('Error al obtener cupones:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+// Obtener un cupón específico
+export const obtenerOferta = async (cuponId) => {
+  try {
+    const { data, error } = await supabase
+      .from('Cupones')
+      .select(`
+        *,
+        Categorias:id_categoria (
+          id_categoria,
+          nombre
+        )
+      `)
+      .eq('id_cupones', cuponId)
       .single()
 
     if (error) throw error
 
     return { success: true, data }
   } catch (error) {
-    console.error('Error al obtener oferta:', error)
+    console.error('Error al obtener cupón:', error)
     return { success: false, error: error.message }
   }
 }
 
-/**
- * Comprar un cupón
- * @param {string} ofertaId - UUID de la oferta
- * @param {string} metodoPago - Método de pago utilizado
- * @returns {Promise<Object>} Datos del cupón creado
- */
-export const comprarCupon = async (ofertaId, metodoPago = 'tarjeta_credito') => {
+// Comprar cupón (la BD maneja stock con triggers)
+export const comprarCupon = async (cuponId) => {
   try {
-    // 1. Verificar disponibilidad
-    const { data: disponible, error: errorVerif } = await supabase.rpc(
-      'verificar_disponibilidad_oferta',
-      { oferta_uuid: ofertaId }
-    )
-
-    if (errorVerif) throw errorVerif
-    if (!disponible) {
-      return { success: false, error: 'Esta oferta ya no está disponible' }
-    }
-
-    // 2. Obtener datos de la oferta y empresa
-    const { data: oferta, error: errorOferta } = await supabase
-      .from('ofertas')
-      .select('precio_oferta, empresas(codigo)')
-      .eq('id', ofertaId)
-      .single()
-
-    if (errorOferta) throw errorOferta
-
-    // 3. Generar código del cupón
-    const { data: codigoCupon, error: errorCodigo } = await supabase.rpc(
-      'generar_codigo_cupon',
-      { codigo_empresa: oferta.empresas.codigo }
-    )
-
-    if (errorCodigo) throw errorCodigo
-
-    // 4. Obtener usuario autenticado
     const {
       data: { user },
     } = await supabase.auth.getUser()
@@ -148,38 +114,42 @@ export const comprarCupon = async (ofertaId, metodoPago = 'tarjeta_credito') => 
       return { success: false, error: 'Debes iniciar sesión para comprar cupones' }
     }
 
-    // 5. Crear el cupón
+    // Verificar stock
     const { data: cupon, error: errorCupon } = await supabase
-      .from('cupones')
+      .from('Cupones')
+      .select('precio_oferta, cantidad_cupon')
+      .eq('id_cupones', cuponId)
+      .single()
+
+    if (errorCupon) throw errorCupon
+
+    if (cupon.cantidad_cupon <= 0) {
+      return { success: false, error: 'Cupón agotado' }
+    }
+
+    // Crear compra (trigger reduce stock automáticamente)
+    const { data: compra, error: errorCompra } = await supabase
+      .from('CuponesComprados')
       .insert([
         {
-          codigo: codigoCupon,
-          oferta_id: ofertaId,
-          cliente_id: user.id,
-          metodo_pago: metodoPago,
-          monto_pagado: oferta.precio_oferta,
+          id_cupon: cuponId,
+          id_usuario: user.id,
           estado: 'disponible',
         },
       ])
       .select()
       .single()
 
-    if (errorCupon) throw errorCupon
+    if (errorCompra) throw errorCompra
 
-    // TODO: Enviar email de confirmación
-
-    return { success: true, data: cupon }
+    return { success: true, data: compra }
   } catch (error) {
     console.error('Error al comprar cupón:', error)
     return { success: false, error: error.message }
   }
 }
 
-/**
- * Obtener cupones del cliente autenticado
- * @param {string} filtro - 'todos', 'disponible', 'canjeado', 'vencido'
- * @returns {Promise<Array>} Lista de cupones
- */
+// Obtener cupones comprados del usuario
 export const obtenerMisCupones = async (filtro = 'todos') => {
   try {
     const {
@@ -191,25 +161,22 @@ export const obtenerMisCupones = async (filtro = 'todos') => {
     }
 
     let query = supabase
-      .from('cupones')
+      .from('CuponesComprados')
       .select(`
         *,
-        ofertas (
-          id,
+        Cupones:id_cupon (
+          id_cupones,
           titulo,
           descripcion,
           precio_regular,
           precio_oferta,
-          fecha_limite_canje,
-          empresas (
-            nombre,
-            direccion,
-            telefono
-          )
+          fecha_fin,
+          fecha_vencimiento_canje,
+          Tienda
         )
       `)
-      .eq('cliente_id', user.id)
-      .order('created_at', { ascending: false })
+      .eq('id_usuario', user.id)
+      .order('fecha_compra', { ascending: false })
 
     if (filtro !== 'todos') {
       query = query.eq('estado', filtro)
@@ -226,111 +193,30 @@ export const obtenerMisCupones = async (filtro = 'todos') => {
   }
 }
 
-/**
- * Obtener estadísticas de una oferta
- * @param {string} ofertaId - UUID de la oferta
- * @returns {Promise<Object>} Estadísticas de la oferta
- */
-export const obtenerEstadisticasOferta = async (ofertaId) => {
-  try {
-    const { data, error } = await supabase
-      .from('ofertas')
-      .select(`
-        cantidad_vendida,
-        cantidad_limite,
-        precio_oferta,
-        empresas (
-          porcentaje_comision
-        )
-      `)
-      .eq('id', ofertaId)
-      .single()
-
-    if (error) throw error
-
-    const disponibles = data.cantidad_limite
-      ? data.cantidad_limite - data.cantidad_vendida
-      : null
-
-    const ingresosTotales = data.cantidad_vendida * data.precio_oferta
-    const comision = ingresosTotales * (data.empresas.porcentaje_comision / 100)
-
-    return {
-      success: true,
-      data: {
-        vendidos: data.cantidad_vendida,
-        disponibles,
-        ingresosTotales,
-        comision,
-      },
-    }
-  } catch (error) {
-    console.error('Error al obtener estadísticas:', error)
-    return { success: false, error: error.message }
-  }
-}
-
-/**
- * Buscar ofertas por texto
- * @param {string} busqueda - Texto a buscar en título o descripción
- * @returns {Promise<Array>} Lista de ofertas encontradas
- */
+// Buscar cupones por texto
 export const buscarOfertas = async (busqueda) => {
   try {
+    const hoy = new Date().toISOString()
+
     const { data, error } = await supabase
-      .from('ofertas')
+      .from('Cupones')
       .select(`
         *,
-        empresas (
-          nombre,
-          rubros (
-            nombre,
-            icono
-          )
+        Categorias:id_categoria (
+          id_categoria,
+          nombre
         )
       `)
-      .eq('estado', 'aprobada')
-      .or(`titulo.ilike.%${busqueda}%,descripcion.ilike.%${busqueda}%,empresas.nombre.ilike.%${busqueda}%`)
-      .lte('fecha_inicio', new Date().toISOString())
-      .gte('fecha_fin', new Date().toISOString())
+      .lte('fecha_inicio', hoy)
+      .gte('fecha_fin', hoy)
+      .gt('cantidad_cupon', 0)
+      .or(`titulo.ilike.%${busqueda}%,descripcion.ilike.%${busqueda}%,Tienda.ilike.%${busqueda}%`)
 
     if (error) throw error
 
     return { success: true, data }
   } catch (error) {
-    console.error('Error al buscar ofertas:', error)
+    console.error('Error al buscar cupones:', error)
     return { success: false, error: error.message }
   }
-}
-
-/**
- * Calcular descuento de una oferta
- * @param {number} precioRegular - Precio regular
- * @param {number} precioOferta - Precio de oferta
- * @returns {number} Porcentaje de descuento
- */
-export const calcularDescuento = (precioRegular, precioOferta) => {
-  return Math.round(((precioRegular - precioOferta) / precioRegular) * 100)
-}
-
-/**
- * Formatear fecha para mostrar
- * @param {string} fecha - Fecha en formato ISO
- * @returns {string} Fecha formateada
- */
-export const formatearFecha = (fecha) => {
-  return new Date(fecha).toLocaleDateString('es-SV', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
-
-/**
- * Verificar si un cupón está vencido
- * @param {string} fechaLimite - Fecha límite en formato ISO
- * @returns {boolean} True si está vencido
- */
-export const estaVencido = (fechaLimite) => {
-  return new Date(fechaLimite) < new Date()
 }
