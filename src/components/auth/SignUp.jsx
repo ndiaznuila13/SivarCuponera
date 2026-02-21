@@ -1,9 +1,71 @@
 import React from 'react'
 import { useState } from 'react'
+import { supabase } from '../../lib/supabase';
 
 export default function SignUp() {
 
     const [showPassword, setShowPassword] = useState(false);
+
+    const [formData, setFormData] = useState({
+        nombres: '',
+        apellidos: '',
+        email: '',
+        password: '',
+        telefono: '',
+        dui: ''
+    });
+
+    const [error, setError] = useState('');
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // 1. Verificar DUI duplicado antes de intentar registrar
+        const { data: duiExistente } = await supabase
+            .from('Usuarios')
+            .select('id')
+            .eq('dui', formData.dui)
+            .maybeSingle();
+
+        if (duiExistente) {
+            setError('El DUI ya está registrado.');
+            return;
+        }
+
+        // 2. Intentar registro en Auth
+        const { error } = await supabase.auth.signUp({
+            email: formData.email,
+            password: formData.password,
+            options: {
+                data: {
+                    nombres: formData.nombres,
+                    apellidos: formData.apellidos,
+                    telefono: formData.telefono,
+                    dui: formData.dui,
+                }
+            }
+        });
+
+        if (error) {
+            // Supabase retorna este mensaje cuando el email ya existe
+            if (error.message.includes('already registered')) {
+                setError('El correo ya está registrado.');
+            } else {
+                setError('Ocurrió un error. Intenta de nuevo.');
+            }
+            return;
+        }
+
+        // 3. Registro exitoso
+        // Redirigir o mostrar mensaje de confirmación
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[var(--color-background-light)] px-4">
@@ -32,7 +94,7 @@ export default function SignUp() {
                         </p>
                     </div>
 
-                    <form className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5">
 
                         {/* Nombre y Apellido */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -44,6 +106,8 @@ export default function SignUp() {
                                 <input
                                     type="text"
                                     required
+                                    name="nombres"
+                                    onChange={handleChange}
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
                             </div>
@@ -55,6 +119,8 @@ export default function SignUp() {
                                 <input
                                     type="text"
                                     required
+                                    name="apellidos"
+                                    onChange={handleChange}
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
                             </div>
@@ -70,6 +136,8 @@ export default function SignUp() {
                                 type="email"
                                 placeholder="correo@email.com"
                                 required
+                                name="email"
+                                onChange={handleChange}
                                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                             />
                         </div>
@@ -84,6 +152,8 @@ export default function SignUp() {
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     required
+                                    name="password"
+                                    onChange={handleChange}
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
 
@@ -128,6 +198,8 @@ export default function SignUp() {
                                     pattern="[0-9]{8}-[0-9]{1}"
                                     title="8 dígitos, un guion y 1 dígito (00000000-0)"
                                     required
+                                    name="dui"
+                                    onChange={handleChange}
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
                             </div>
@@ -142,6 +214,8 @@ export default function SignUp() {
                                     pattern="[0-9]{4}-[0-9]{4}"
                                     title="(0000-0000)"
                                     required
+                                    name="telefono"
+                                    onChange={handleChange}
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
                             </div>
@@ -149,9 +223,13 @@ export default function SignUp() {
                         </div>
 
                         {/* Botón */}
+                        {error && (
+                            <p className="text-red-500 text-sm">{error}</p>
+                        )}
                         <button
                             type="submit"
                             className="w-full bg-[var(--color-primary)] hover:opacity-90 text-white font-semibold py-3 rounded-lg transition duration-200 hover:cursor-pointer"
+
                         >
                             Registrarse
                         </button>

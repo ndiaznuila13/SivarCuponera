@@ -1,8 +1,34 @@
 import React from 'react'
 import { useState } from 'react'
+import { supabase } from '../../lib/supabase'
 
 export default function LogIn() {
     const [showPassword, setShowPassword] = useState(false);
+
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        const { error } = await supabase.auth.signInWithPassword({
+            email: formData.email,
+            password: formData.password,
+        });
+
+        if (error) {
+            setError('Correo o contraseña incorrectos.');
+            setLoading(false);
+            return;
+        }
+
+        // Login exitoso, redirigir
+        setLoading(false);
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[var(--color-background-light)] px-4">
@@ -31,7 +57,7 @@ export default function LogIn() {
                         </p>
                     </div>
 
-                    <form className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5">
 
                         {/* Email */}
                         <div>
@@ -88,7 +114,9 @@ export default function LogIn() {
                         </div>
 
                         {/* Botón */}
+
                         <button
+
                             type="submit"
                             className="w-full bg-[var(--color-primary)] hover:opacity-90 text-white font-semibold py-3 rounded-lg transition duration-200 hover:cursor-pointer"
                         >
