@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
 export default function Header() {
@@ -23,28 +24,28 @@ export default function Header() {
 
           {/* Navegación Desktop */}
           <div className="hidden md:flex items-center space-x-6">
-            <a 
-              href="#ofertas" 
+            <Link 
+              to="/" 
               className="hover:text-primary transition-colors font-medium"
             >
               Ofertas
-            </a>
+            </Link>
           
-            <a 
-              href="#cupones-comprados" 
+            <Link 
+              to="/mis-cupones-comprados" 
               className="hover:text-primary transition-colors font-medium"
             >
               Cupones Comprados
-            </a>
+            </Link>
 
             {user ? (
               <div className="flex items-center space-x-4">
-                <a 
-                  href="#mis-cupones" 
+                <Link 
+                  to="/mis-cupones-comprados" 
                   className="hover:text-primary transition-colors font-medium"
                 >
                   Mis Cupones
-                </a>
+                </Link>
                 <div className="flex items-center space-x-3">
                   <span className="text-sm text-slate-300">
                     {cliente?.nombres || 'Usuario'}
@@ -108,13 +109,13 @@ export default function Header() {
         {/* Menú móvil */}
         {menuAbierto && (
           <div className="md:hidden mt-4 pb-4 space-y-3 border-t border-slate-700 pt-4">
-            <a 
-              href="#ofertas" 
+            <Link 
+              to="/" 
               className="block py-2 hover:text-primary transition-colors"
               onClick={() => setMenuAbierto(false)}
             >
               Ofertas
-            </a>
+            </Link>
             <a 
               href="#categorias" 
               className="block py-2 hover:text-primary transition-colors"
@@ -122,23 +123,23 @@ export default function Header() {
             >
               Categorías
             </a>
-            <a 
-              href="#cupones-comprados" 
+            <Link 
+              to="/mis-cupones-comprados" 
               className="block py-2 hover:text-primary transition-colors"
               onClick={() => setMenuAbierto(false)}
             >
               Cupones Comprados
-            </a>
+            </Link>
 
             {user ? (
               <>
-                <a 
-                  href="#mis-cupones" 
+                <Link 
+                  to="/mis-cupones-comprados" 
                   className="block py-2 hover:text-primary transition-colors"
                   onClick={() => setMenuAbierto(false)}
                 >
                   Mis Cupones
-                </a>
+                </Link>
                 <div className="pt-2 border-t border-slate-700">
                   <p className="text-sm text-slate-300 mb-2">
                     {cliente?.nombres || 'Usuario'}
