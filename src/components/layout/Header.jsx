@@ -35,6 +35,12 @@ export default function Header() {
             >
               Categorías
             </a>
+            <a 
+              href="#cupones-comprados" 
+              className="hover:text-primary transition-colors font-medium"
+            >
+              Cupones Comprados
+            </a>
 
             {user ? (
               <div className="flex items-center space-x-4">
@@ -120,6 +126,13 @@ export default function Header() {
               onClick={() => setMenuAbierto(false)}
             >
               Categorías
+            </a>
+            <a 
+              href="#cupones-comprados" 
+              className="block py-2 hover:text-primary transition-colors"
+              onClick={() => setMenuAbierto(false)}
+            >
+              Cupones Comprados
             </a>
 
             {user ? (
