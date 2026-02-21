@@ -9,6 +9,7 @@ import MisCupones from './components/cupones/MisCupones'
 
 function App() {
   const [rubroSeleccionado, setRubroSeleccionado] = useState(null)
+  const [busqueda, setBusqueda] = useState('')
 
   const handleSeleccionarRubro = (idRubro) => {
     console.log('Categoría seleccionada en App:', idRubro)
@@ -20,14 +21,16 @@ function App() {
       <Router>
         <Layout>
           <Routes>
-            <Route 
-              path="/" 
+            <Route
+              path="/"
               element={
-                <Home 
+                <Home
                   rubroSeleccionado={rubroSeleccionado}
                   onSeleccionarRubro={handleSeleccionarRubro}
+                  busqueda={busqueda}
+                  setBusqueda={setBusqueda}
                 />
-              } 
+              }
             />
             {/* <Route path="/login" element={<LogIn />} /> */}
             {/* <Route path="/signup" element={<SignUp />} /> */}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { obtenerOfertasActivas, calcularDescuento } from '../../lib/api'
 import OfertaCard from './OfertaCard'
 
-export default function OfertasCuadricula({ rubroSeleccionado }) {
+export default function OfertasCuadricula({ rubroSeleccionado, busqueda }) {
   const [ofertas, setOfertas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -39,6 +39,15 @@ export default function OfertasCuadricula({ rubroSeleccionado }) {
 
   const obtenerOfertasOrdenadas = () => {
     let ofertasOrdenadas = [...ofertas]
+
+    if (busqueda) {
+      const termino = busqueda.toLowerCase()
+      ofertasOrdenadas = ofertasOrdenadas.filter((oferta) => {
+        const titulo = oferta.titulo || ''
+        const marca = oferta.Tienda || ''
+        return titulo.toLowerCase().includes(termino) || marca.toLowerCase().includes(termino)
+      })
+    }
 
     switch (ordenamiento) {
       case 'recientes':
