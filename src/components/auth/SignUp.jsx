@@ -12,7 +12,7 @@ export default function SignUp() {
 
                 {/* Lado izquierdo - Branding (solo visible en desktop) */}
                 <div className="hidden md:flex flex-col justify-center items-center bg-[var(--color-oxford-navy)] text-white p-12">
-                    <h2 className="text-4xl font-bold mb-4">
+                    <h2 className="text-4xl font-bold mb-4 text-center">
                         Únete a SivarCuponera
                     </h2>
                     <p className="text-lg text-gray-200 text-center">
@@ -43,7 +43,6 @@ export default function SignUp() {
                                 </label>
                                 <input
                                     type="text"
-                                    placeholder="Juan"
                                     required
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
@@ -55,7 +54,6 @@ export default function SignUp() {
                                 </label>
                                 <input
                                     type="text"
-                                    placeholder="Pérez"
                                     required
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
@@ -128,6 +126,7 @@ export default function SignUp() {
                                     type="text"
                                     placeholder="00000000-0"
                                     pattern="[0-9]{8}-[0-9]{1}"
+                                    title="8 dígitos, un guion y 1 dígito (00000000-0)"
                                     required
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
@@ -141,6 +140,7 @@ export default function SignUp() {
                                     type="tel"
                                     placeholder="0000-0000"
                                     pattern="[0-9]{4}-[0-9]{4}"
+                                    title="(0000-0000)"
                                     required
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
@@ -150,8 +150,8 @@ export default function SignUp() {
 
                         {/* Botón */}
                         <button
-                            type="button"
-                            className="w-full bg-[var(--color-primary)] hover:opacity-90 text-white font-semibold py-3 rounded-lg transition duration-200"
+                            type="submit"
+                            className="w-full bg-[var(--color-primary)] hover:opacity-90 text-white font-semibold py-3 rounded-lg transition duration-200 hover:cursor-pointer"
                         >
                             Registrarse
                         </button>
@@ -161,7 +161,7 @@ export default function SignUp() {
                     {/* Link a login */}
                     <p className="text-sm text-center text-gray-500 mt-6">
                         ¿Ya tienes cuenta?{" "}
-                        <span className="text-[var(--color-primary)] font-medium cursor-pointer hover:underline">
+                        <span className="text-[var(--color-primary)] font-medium hover:cursor-pointer hover:underline">
                             Inicia sesión
                         </span>
                     </p>
