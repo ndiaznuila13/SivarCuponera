@@ -1,40 +1,41 @@
 import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
 import Layout from './components/layout/Layout'
-import Hero from './components/ofertas/Hero'
-import Sidebar from './components/ofertas/Sidebar'
-import OfertasCuadricula from './components/ofertas/OfertasCuadricula'
-import PopupFooter from './components/common/PopupFooter'
-import './App.css'
+import Home from './pages/Home'
+// import LogIn from './components/auth/LogIn'
+// import SignUp from './components/auth/SignUp'
+import MisCupones from './components/cupones/MisCupones'
 
 function App() {
-  const [popup, setPopup] = useState({ open: false, title: '', content: null })
+  const [rubroSeleccionado, setRubroSeleccionado] = useState(null)
 
-  const handleOpenPopup = (title, content) => {
-    setPopup({ open: true, title, content })
-  }
-
-  const handleClosePopup = () => {
-    setPopup({ open: false, title: '', content: null })
+  const handleSeleccionarRubro = (idRubro) => {
+    console.log('Categoría seleccionada en App:', idRubro)
+    setRubroSeleccionado(idRubro)
   }
 
   return (
-    <Layout>
-      <Hero />
-      
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-64 shrink-0">
-            <Sidebar />
-          </div>
-          <OfertasCuadricula />
-        </div>
-      </main>
-
-      {/* Popup emergente reutilizable */}
-      <PopupFooter open={popup.open} onClose={handleClosePopup} title={popup.title}>
-        {popup.content}
-      </PopupFooter>
-    </Layout>
+    <AuthProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route 
+              path="/" 
+              element={
+                <Home 
+                  rubroSeleccionado={rubroSeleccionado}
+                  onSeleccionarRubro={handleSeleccionarRubro}
+                />
+              } 
+            />
+            {/* <Route path="/login" element={<LogIn />} /> */}
+            {/* <Route path="/signup" element={<SignUp />} /> */}
+            <Route path="/mis-cupones" element={<MisCupones />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </AuthProvider>
   )
 }
 

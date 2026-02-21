@@ -1,101 +1,149 @@
+import { useState, useEffect } from 'react'
+import { obtenerOfertasActivas, calcularDescuento } from '../../lib/api'
 import OfertaCard from './OfertaCard'
 
-// Importar imágenes
-import cafeImg from '../../assets/img-cupones/cafe.jpg'
-import gorrasImg from '../../assets/img-cupones/gorras.jpg'
-import maquillajeImg from '../../assets/img-cupones/MAC.jpg'
-import mascotasImg from '../../assets/img-cupones/mascotas.jpg'
-import radioImg from '../../assets/img-cupones/radio.webp'
-import zapatosImg from '../../assets/img-cupones/zapatosSportline.png'
+export default function OfertasCuadricula({ rubroSeleccionado }) {
+  const [ofertas, setOfertas] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [ordenamiento, setOrdenamiento] = useState('recientes')
 
-// Datos de ejemplo para los cupones
-const cupones = [
-  {
-    id: 1,
-    descuento: "Lleva 2 pares de Sambas por $150",
-    tienda: "Sportline",
-    imagen: zapatosImg,
-    descripcion: "No pierdas la oportunidad de ahorrar en tu próxima compra deportiva.",
-    etiqueta: "Ahorra $30",
-    etiquetaColor: "bg-green-100 text-green-700",
-    expira: "Vence en 2 días",
-  },
-  {
-    id: 2,
-    descuento: "Laptop Asus a $399.99",
-    tienda: "RadioShack",
-    imagen: radioImg,
-    descripcion: "Adquiere esta espectacular laptop con un descuento increíble.",
-    etiqueta: "Ahorra $100",
-    etiquetaColor: "bg-red-100 text-red-600",
-    expira: "válido hasta el 30 de marzo",
-  },
-  {
-    id: 3,
-    descuento: "Bebida grande",
-    tienda: "Starbucks",
-    imagen: cafeImg,
-    descripcion: "Por solo $2.99 obtén una bebida grande de Starbucks.",
-    etiqueta: "Solo hoy",
-    etiquetaColor: "bg-orange-100 text-orange-600",
-    expira: "válido hasta las 4 PM",
-  },
-  {
-    id: 4,
-    descuento: "Obten tu labial MAC a $15",
-    tienda: "Siman",
-    imagen: maquillajeImg,
-    descripcion: "Ahorra en tus compras de labial.",
-    etiqueta: "Ahorra $5",
-    etiquetaColor: "bg-green-100 text-green-600",
-    expira: "válido hasta durar existencias",
-  },
-  {
-    id: 5,
-    descuento: "Llevate 2 gorras de tu equipo favorito por $90",
-    tienda: "New Era",
-    imagen: gorrasImg,
-    descripcion: "Compra tu gorra de tu equipo favorito y obtén la segunda al 50% de descuento",
-    etiqueta: "¡Oferta Especial!",
-    etiquetaColor: "bg-green-100 text-green-600",
-    expira: "válido hasta el 28 de febrero de 2026",
-  },
-  {
-    id: 6,
-    descuento: "Compra tu bolsa de comida Pedigree de 18 lbs por $10",
-    tienda: "Walmart",
-    imagen: mascotasImg,
-    descripcion: "Obtén un 10% de descuento en productos para mascotas.",
-    etiqueta: "Antes $16.98",
-    etiquetaColor: "bg-yellow-100 text-yellow-600",
-    expira: "válido hasta el 31 de marzo de 2026",
-  },
-]
+  useEffect(() => {
+    cargarOfertas()
+  }, [rubroSeleccionado])
 
-export default function OfertasCuadricula() {
+  const cargarOfertas = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      console.log('Cargando ofertas con categoría:', rubroSeleccionado)
+
+      const resultado = await obtenerOfertasActivas(rubroSeleccionado)
+
+      console.log('Resultado obtenerOfertasActivas:', resultado)
+
+      if (resultado.success) {
+        console.log('Ofertas cargadas:', resultado.data)
+        setOfertas(resultado.data)
+      } else {
+        setError(resultado.error)
+      }
+    } catch (err) {
+      setError('Error al cargar las ofertas')
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const obtenerOfertasOrdenadas = () => {
+    let ofertasOrdenadas = [...ofertas]
+
+    switch (ordenamiento) {
+      case 'recientes':
+        ofertasOrdenadas.sort((a, b) => new Date(b.fecha_inicio) - new Date(a.fecha_inicio))
+        break
+      case 'descuento':
+        ofertasOrdenadas.sort((a, b) => {
+          const descuentoA = calcularDescuento(a.precio_regular, a.precio_oferta)
+          const descuentoB = calcularDescuento(b.precio_regular, b.precio_oferta)
+          return descuentoB - descuentoA
+        })
+        break
+      case 'populares':
+        ofertasOrdenadas.sort((a, b) => (b.cantidad_cupon || 0) - (a.cantidad_cupon || 0))
+        break
+      default:
+        break
+    }
+
+    return ofertasOrdenadas
+  }
+
+  if (loading) {
+    return (
+      <div className="flex-1">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
+          <h2 className="text-lg sm:text-xl font-bold text-oxford-navy">Mejores Ofertas para Ti</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row items-start gap-4">
+                <div className="w-full sm:w-32 h-32 bg-slate-200 rounded-lg animate-pulse"></div>
+                <div className="flex-1 w-full space-y-3">
+                  <div className="h-4 bg-slate-200 rounded animate-pulse w-3/4"></div>
+                  <div className="h-4 bg-slate-200 rounded animate-pulse w-1/2"></div>
+                  <div className="h-4 bg-slate-200 rounded animate-pulse w-full"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <p className="text-red-600 font-medium mb-2">Error al cargar las ofertas</p>
+          <p className="text-red-500 text-sm mb-4">{error}</p>
+          <button
+            onClick={cargarOfertas}
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-[#005f87] transition-colors"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const ofertasOrdenadas = obtenerOfertasOrdenadas()
+
   return (
     <div className="flex-1">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-4">
-        <h2 className="text-lg sm:text-xl font-bold text-oxford-navy">Mejores Ofertas para Ti</h2>
+        <h2 className="text-lg sm:text-xl font-bold text-oxford-navy">
+          Mejores Ofertas para Ti
+          {ofertas.length > 0 && (
+            <span className="text-slate-500 font-normal text-base ml-2">
+              ({ofertas.length})
+            </span>
+          )}
+        </h2>
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <select className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 bg-white w-full sm:w-auto">
-            <option>Más Populares</option>
-            <option>Más Recientes</option>
-            <option>Mayor Descuento</option>
+          <select
+            value={ordenamiento}
+            onChange={(e) => setOrdenamiento(e.target.value)}
+            className="border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-600 bg-white w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="recientes">Más Recientes</option>
+            <option value="descuento">Mayor Descuento</option>
+            <option value="populares">Más Populares</option>
           </select>
         </div>
       </div>
-      {/* Grid: 1 columna en móvil, 2 en tablet/desktop */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        {cupones.map((cupon) => (
-          <OfertaCard key={cupon.id} cupon={cupon} />
-        ))}
-      </div>
-      <div className="flex justify-center mt-6 sm:mt-8">
-        <button className="px-6 sm:px-8 py-2.5 sm:py-3 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50 transition-colors text-sm sm:text-base">
-          Cargar Más Ofertas
-        </button>
-      </div>
+
+      {ofertasOrdenadas.length === 0 ? (
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-12 text-center">
+          <h3 className="text-xl font-bold text-slate-700 mb-2">No hay ofertas disponibles</h3>
+          <p className="text-slate-500">
+            {rubroSeleccionado
+              ? 'No hay ofertas en esta categoría en este momento.'
+              : 'No hay ofertas activas en este momento.'}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          {ofertasOrdenadas.map((oferta) => (
+            <OfertaCard key={oferta.id_cupones} oferta={oferta} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
