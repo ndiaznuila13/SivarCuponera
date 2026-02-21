@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase';
+import { Link } from 'react-router-dom';
 
 export default function SignUp() {
 
@@ -239,9 +240,9 @@ export default function SignUp() {
                     {/* Link a login */}
                     <p className="text-sm text-center text-gray-500 mt-6">
                         ¿Ya tienes cuenta?{" "}
-                        <span className="text-[var(--color-primary)] font-medium hover:cursor-pointer hover:underline">
+                        <Link to="/login" className="text-[var(--color-primary)] font-medium hover:cursor-pointer hover:underline">
                             Inicia sesión
-                        </span>
+                        </Link>
                     </p>
 
                 </div>
