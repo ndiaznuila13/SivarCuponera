@@ -1,5 +1,42 @@
 
-function CuponCard({ cupon }) {
+import { supabase } from "../../lib/supabase";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+function CuponCard({ oferta }) {
+
+    const navigate = useNavigate();
+    const [comprando, setComprando] = useState(false);
+
+    const handleComprar = async () => {
+        setComprando(true);
+
+        // Obtener sesión actual
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) {
+            navigate('/login');
+            return;
+        }
+
+        const { error } = await supabase
+            .from('CuponesComprados')
+            .insert({
+                id_cupones: oferta.id_cupones,
+                id: session.user.id,
+                estado: 'Vigente'
+            });
+
+        if (error) {
+            console.error(error);
+            setComprando(false);
+            return;
+        }
+
+        // Compra exitosa
+        setComprando(false);
+    };
+
     return (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-all">
 
