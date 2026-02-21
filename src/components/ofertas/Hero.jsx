@@ -20,7 +20,7 @@ export default function Hero({ busqueda, setBusqueda }) {
             Buscar
           </button>
         </div>
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-6 text-sm text-slate-300">
+        {/* <div className="flex flex-wrap items-center justify-center gap-4 mt-6 text-sm text-slate-300">
           <span>Trending:</span>
           <a href="#" className="text-white font-medium hover:underline">Sportline</a>
           <a href="#" className="text-white font-medium hover:underline">RadioShack</a>
@@ -28,7 +28,7 @@ export default function Hero({ busqueda, setBusqueda }) {
           <a href="#" className="text-white font-medium hover:underline">Siman</a>
           <a href="#" className="text-white font-medium hover:underline">New Era</a>
           <a href="#" className="text-white font-medium hover:underline">Walmart</a>
-        </div>
+        </div> */}
       </div>
     </section>
   )
