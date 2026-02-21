@@ -1,45 +1,50 @@
 import { supabase } from './supabase'
 
-export const obtenerOfertas = async (idCategoria = null, busqueda = null) => {
-  let query = supabase
-    .from('Cupones')
-    .select('*')
-    .eq('estado', 'aprobada')
-    .gt('cantidad_cupon', 0)
-    .lte('fecha_inicio', new Date().toISOString())
-    .gte('fecha_fin', new Date().toISOString())
+export const obtenerOfertasActivas = async (idCategoria = null, busqueda = null) => {
+  try {
+    let query = supabase
+      .from('Cupones')
+      .select('*')
+      .gt('cantidad_cupon', 0)
+      .lte('fecha_inicio', new Date().toISOString())
+      .gte('fecha_fin', new Date().toISOString())
 
-  if (idCategoria) {
-    query = query.eq('id_categoria', idCategoria)
-  }
+    if (idCategoria) {
+      query = query.eq('id_categoria', idCategoria)
+    }
 
-  if (busqueda) {
-    query = query.or(`titulo.ilike.%${busqueda}%,Tienda.ilike.%${busqueda}%`)
-  }
+    if (busqueda) {
+      query = query.or(`titulo.ilike.%${busqueda}%,Tienda.ilike.%${busqueda}%`)
+    }
 
-  const { data, error } = await query
+    const { data, error } = await query
 
-  if (error) {
+    if (error) throw error
+
+    return { success: true, data: data || [] }
+  } catch (error) {
     console.error('Error al cargar ofertas:', error)
-    return []
+    return { success: false, error: error.message, data: [] }
   }
-
-  return data || []
 }
 
-export const obtenerCategorias = async () => {
-  const { data, error } = await supabase
-    .from('Categorias')
-    .select('*')
-    .order('nombre', { ascending: true })
+export const obtenerRubros = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('Categorias')
+      .select('*')
+      .order('nombre', { ascending: true })
 
-  if (error) {
+    if (error) throw error
+
+    return { success: true, data: data || [] }
+  } catch (error) {
     console.error('Error al cargar categorías:', error)
-    return []
+    return { success: false, error: error.message, data: [] }
   }
-
-  return data || []
 }
+
+export const obtenerCategorias = obtenerRubros
 
 export const obtenerCuponesPorUsuario = async (userId) => {
   const { data, error } = await supabase
@@ -96,7 +101,7 @@ export const comprarCupon = async (id_cupon) => {
     const { data: compra, error: errorCompra } = await supabase
       .from('CuponesComprados')
       .insert({
-        id_cupones: id_cupon,
+        id_cupon: id_cupon,
         id: user.id,
         codigo: codigoUnico,
         estado: 'disponible'

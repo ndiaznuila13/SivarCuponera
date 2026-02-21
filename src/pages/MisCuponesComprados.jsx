@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import CuponCard from '../components/cupones/CuponCard'
+import Layout from '../components/layout/Layout'
 
 export default function MisCuponesComprados() {
   const [cupones, setCupones] = useState([])
@@ -49,14 +50,17 @@ export default function MisCuponesComprados() {
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <p className="text-center text-slate-600">Cargando tus cupones...</p>
-      </div>
+      <Layout>
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <p className="text-center text-slate-600">Cargando tus cupones...</p>
+        </div>
+      </Layout>
     )
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <Layout>
+      <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-oxford-navy mb-6">Mis Cupones</h1>
 
       <div className="flex gap-3 mb-6 flex-wrap">
@@ -105,6 +109,7 @@ export default function MisCuponesComprados() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </Layout>
   )
 }
