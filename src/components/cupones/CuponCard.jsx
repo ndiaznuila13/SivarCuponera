@@ -46,7 +46,7 @@ function CuponCard({ oferta }) {
             <div className="w-full h-48 bg-slate-100 flex items-center justify-center overflow-hidden">
                 {oferta.imagen ? (
                     <img
-                        src={`/src/assets/img-cupones/${oferta.imagen}`}
+                        src={`/img/${oferta.imagen}`}
                         alt={oferta.titulo}
                         className="w-full h-full object-cover"
                         onError={(e) => {
