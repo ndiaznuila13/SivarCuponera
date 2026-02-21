@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function getPrecioFromQuery(search) {
   const params = new URLSearchParams(search);
@@ -10,6 +11,7 @@ const PagoCupon = () => {
   const [success, setSuccess] = useState(false);
   const location = useLocation();
   const precio = getPrecioFromQuery(location.search);
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -40,6 +42,12 @@ const PagoCupon = () => {
         <button type="submit" className="w-full mt-2 py-3 bg-primary text-white font-bold rounded-lg hover:bg-blue-700 transition-colors">Pagar</button>
         {success && <div className="mt-4 text-green-600 font-bold text-center">Pago realizado correctamente.</div>}
       </form>
+      <button
+        className="w-full mt-4 py-3 bg-gray-200 text-primary font-bold rounded-lg hover:bg-gray-300 transition-colors"
+        onClick={() => navigate('/')}
+      >
+        Regresar a la página principal
+      </button>
     </div>
   );
 };
