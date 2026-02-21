@@ -28,7 +28,7 @@ export default function SignUp() {
         e.preventDefault();
 
         // 1. Verificar DUI duplicado antes de intentar registrar
-        const { data: duiExistente, error: duiError } = await supabase
+        const { data: duiExistente } = await supabase
             .from('Usuarios')
             .select('id')
             .eq('dui', formData.dui)
@@ -40,7 +40,7 @@ export default function SignUp() {
         }
 
         // 2. Intentar registro en Auth
-        const { data, error } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
             email: formData.email,
             password: formData.password,
             options: {
