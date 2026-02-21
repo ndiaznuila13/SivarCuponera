@@ -29,12 +29,7 @@ export default function Header() {
             >
               Ofertas
             </a>
-            <a 
-              href="#categorias" 
-              className="hover:text-primary transition-colors font-medium"
-            >
-              Categorías
-            </a>
+          
             <a 
               href="#cupones-comprados" 
               className="hover:text-primary transition-colors font-medium"

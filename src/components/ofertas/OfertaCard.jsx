@@ -20,9 +20,13 @@ export default function OfertaCard({ oferta }) {
         <div className="w-full sm:w-32 sm:h-32 h-48 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
           {oferta.imagen ? (
             <img
-              src={oferta.imagen}
+              src={`/src/assets/img-cupones/${oferta.imagen}`}
               alt={oferta.titulo}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none'
+                e.target.parentElement.innerHTML = `<span class="text-slate-400 text-4xl font-bold">${oferta.Tienda?.charAt(0) || '?'}</span>`
+              }}
             />
           ) : (
             <span className="text-slate-400 text-4xl font-bold">
@@ -30,32 +34,31 @@ export default function OfertaCard({ oferta }) {
             </span>
           )}
         </div>
-        
-        <div className="flex-1 w-full">
-          {/* Etiqueta de descuento eliminada */}
-          
-          {oferta.etiqueta && (
-            <span className="inline-block mt-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-              {oferta.etiqueta}
+
+        <div className="flex-1 w-full space-y-2">
+          {descuento > 0 && (
+            <span className={`inline-block text-xs font-bold px-3 py-1 rounded-full ${getEtiquetaColor()}`}>
+              Ahorra {descuento}%
             </span>
           )}
-          <h3 className="text-lg sm:text-xl font-bold text-primary mt-2">
+
+          <h3 className="text-xl font-bold text-primary leading-tight">
             {oferta.titulo}
           </h3>
-          
-          <p className="font-bold text-oxford-navy text-base sm:text-lg">
+
+          <p className="font-semibold text-oxford-navy text-lg">
             {oferta.Tienda || 'Tienda'}
           </p>
-          
-          <p className="text-sm sm:text-base text-slate-500 mt-1">
+
+          <p className="text-sm text-slate-600 line-clamp-2">
             {oferta.descripcion}
           </p>
 
-          <div className="flex items-center gap-3 mt-2">
-            <span className="text-slate-400 line-through text-sm">
+          <div className="flex items-baseline gap-3 pt-2">
+            <span className="text-slate-400 line-through text-base">
               ${oferta.precio_regular?.toFixed(2)}
             </span>
-            <span className="text-primary font-bold text-lg">
+            <span className="text-primary font-bold text-2xl">
               ${oferta.precio_oferta?.toFixed(2)}
             </span>
           </div>
@@ -77,7 +80,7 @@ export default function OfertaCard({ oferta }) {
       </button>
 
       <p className="text-xs sm:text-sm text-slate-400 text-center mt-2">
-        Válido hasta el {new Date(oferta.fecha_fin).toLocaleDateString('es-ES')} 
+        Válido hasta el {new Date(oferta.fecha_fin).toLocaleDateString('es-ES')}
         ({diasRestantes} días restantes)
       </p>
     </div>
