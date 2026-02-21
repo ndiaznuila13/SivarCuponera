@@ -11,7 +11,14 @@ export default function ProtectedRoute() {
         });
     }, []);
 
-    if (session === undefined) return null; // Cargando
+    if (session === undefined) {
+        return <div className="text-center mt-10">Cargando...</div>;
+    }
 
-    return session ? children : <Navigate to="/login" />;
+    // Si hay sesión → mostrar las rutas hijas 
+    if (session) {
+         return <Outlet />; } 
+         
+    // Si no hay sesión → login 
+    return <Navigate to="/login" replace />;
 }

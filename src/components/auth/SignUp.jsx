@@ -30,16 +30,16 @@ export default function SignUp() {
         e.preventDefault();
 
         // 1. Verificar DUI duplicado antes de intentar registrar
-        const { data: duiExistente } = await supabase
-            .from('Usuarios')
-            .select('id')
-            .eq('dui', formData.dui)
-            .maybeSingle();
+       /** */// const { data: duiExistente } = await supabase
+           // .from('Usuarios')
+            //.select('id')
+            //.eq('dui', formData.dui)
+            //.maybeSingle();
 
-        if (duiExistente) {
-            setError('El DUI ya está registrado.');
-            return;
-        }
+       // if (duiExistente) {
+            //setError('El DUI ya está registrado.');
+           // return;
+       // }  
 
         // 2. Intentar registro en Auth
         const { error } = await supabase.auth.signUp({
