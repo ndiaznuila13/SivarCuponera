@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute() {
     const [session, setSession] = useState(undefined);
 
     useEffect(() => {
