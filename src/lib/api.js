@@ -191,7 +191,7 @@ export const obtenerMisCupones = async (filtro = 'todos') => {
       .eq('id_usuario', user.id)
       .order('fecha_compra', { ascending: false })
 
-    if (filtro !== 'todos') {
+    if (filtro == 'disponible' || filtro == 'canjeado') {
       query = query.eq('estado', filtro)
     }
 

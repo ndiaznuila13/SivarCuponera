@@ -9,10 +9,19 @@ const MisCuponesComprados = () => {
   useEffect(() => {
     const fetchCupones = async () => {
       setLoading(true);
-      const result = await obtenerMisCupones(filtro);
+      const result = await obtenerMisCupones(
+        filtro == 'vencido'? 'todos' : filtro);
 
       if (result.success) {
-        setCupones(result.data);
+        let datos = result.data;
+
+        if (filtro === 'vencido') {
+          datos = datos.filter((cupon)=> {
+            const fecha = cupon.Cupones?.fecha_vencimiento_cupon;
+            return fecha ? new Date(fecha) < new Date() : false;
+          });
+        }
+        setCupones(datos);
       } else {
         setCupones([]);
       }
