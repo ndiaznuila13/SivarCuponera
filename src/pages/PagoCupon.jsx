@@ -4,49 +4,45 @@ import { comprarCupon } from '../lib/api';
 import Layout from '../components/layout/Layout';
 import { supabase } from '../lib/supabase';
 
-const { user } = supabase.auth.useUser();
-const navigate = useNavigate();
-const [comprando, setComprando] = useState(false);
-
-
-const registrarCompra = async (cupon, userId) => {
-  const { error } = await supabase
-    .from('CuponesComprados')
-    .insert({
-      id_cupones: cupon.id_cupones,
-      id: userId,
-      estado: 'Vigente'
-    });
-
-  if (error) throw error;
-};
-
-const handleComprar = async () => {
-  setComprando(true);
-
-  const { data: { session } } = await supabase.auth.getSession();
-  const userId = session.user.id;
-
-  if (!session) {
-    navigate('/login');
-    return;
-  }
-
-  try {
-    await registrarCompra(oferta, userId);
-  } catch (error) {
-    console.error(error);
-  }
-
-  setComprando(false);
-};
-
-
 const PagoCupon = () => {
   const [success, setSuccess] = useState(false);
   const [errorFecha, setErrorFecha] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
+  const [comprando, setComprando] = useState(false);
+
+
+  const registrarCompra = async (cupon, userId) => {
+    const { error } = await supabase
+      .from('CuponesComprados')
+      .insert({
+        id_cupones: cupon.id_cupones,
+        id: userId,
+        estado: 'Vigente'
+      });
+
+    if (error) throw error;
+  };
+
+  const handleComprar = async () => {
+    setComprando(true);
+
+    const { data: { session } } = await supabase.auth.getSession();
+    const userId = session.user.id;
+
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      await registrarCompra(oferta, userId);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setComprando(false);
+  };
 
   const { id_cupon, precio } = location.state || {};
 
