@@ -23,7 +23,7 @@ export default function OfertaCard({ cupon }) {
         </div>
       </div>
       <button className="w-full mt-4 py-3 sm:py-3.5 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors text-sm sm:text-base">
-        Obtener Cupón
+        Comprar Cupón
       </button>
       <p className="text-xs sm:text-sm text-slate-400 text-center mt-2">{cupon.expira}</p>
     </div>
