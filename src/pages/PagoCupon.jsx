@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { comprarCupon } from '../lib/api';
 import Layout from '../components/layout/Layout';
+import { supabase } from '../lib/supabase';
+
+const { user } = supabase.auth.useUser();
+const navigate = useNavigate();
+const [comprando, setComprando] = useState(false);
 
 
 const registrarCompra = async (cupon, userId) => {
