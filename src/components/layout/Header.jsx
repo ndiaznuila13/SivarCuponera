@@ -29,7 +29,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center">
             <span className="text-2xl font-bold">
-              Sivar<span className="text-primary">Cuponera</span>
+              Sivar<span className="text-cyan-400">Cuponera</span>
             </span>
           </Link>
 
