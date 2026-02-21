@@ -18,26 +18,22 @@ function App() {
 
   return (
     <AuthProvider>
-      <Router>
-        <Layout>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  rubroSeleccionado={rubroSeleccionado}
-                  onSeleccionarRubro={handleSeleccionarRubro}
-                  busqueda={busqueda}
-                  setBusqueda={setBusqueda}
-                />
-              }
-            />
-            {/* <Route path="/login" element={<LogIn />} /> */}
-            {/* <Route path="/signup" element={<SignUp />} /> */}
-            <Route path="/mis-cupones" element={<MisCupones />} />
-          </Routes>
-        </Layout>
-      </Router>
+      <Layout>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                rubroSeleccionado={rubroSeleccionado}
+                onSeleccionarRubro={handleSeleccionarRubro}
+                busqueda={busqueda}
+                setBusqueda={setBusqueda}
+              />
+            }
+          />
+          <Route path="/mis-cupones" element={<MisCupones />} />
+        </Routes>
+      </Layout>
     </AuthProvider>
   )
 }

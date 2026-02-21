@@ -1,21 +1,22 @@
-import { calcularDescuento, calcularDiasRestantes } from '../../lib/api'
+import { calcularDescuento, calcularDiasRestantes } from '../../lib/api';
+import { useNavigate } from 'react-router-dom';
 
 export default function OfertaCard({ oferta }) {
-  const descuento = calcularDescuento(oferta.precio_regular, oferta.precio_oferta)
-  const diasRestantes = calcularDiasRestantes(oferta.fecha_fin)
-  const stockBajo = oferta.cantidad_cupon <= 5
+  const descuento = calcularDescuento(oferta.precio_regular, oferta.precio_oferta);
+  const diasRestantes = calcularDiasRestantes(oferta.fecha_fin);
+  const stockBajo = oferta.cantidad_cupon <= 5;
+  const navigate = useNavigate();
 
   const getEtiquetaColor = () => {
-    if (descuento >= 50) return 'bg-red-100 text-red-700'
-    if (descuento >= 30) return 'bg-orange-100 text-orange-700'
-    if (descuento >= 20) return 'bg-yellow-100 text-yellow-700'
-    return 'bg-green-100 text-green-700'
-  }
+    if (descuento >= 50) return 'bg-red-100 text-red-700';
+    if (descuento >= 30) return 'bg-orange-100 text-orange-700';
+    if (descuento >= 20) return 'bg-yellow-100 text-yellow-700';
+    return 'bg-green-100 text-green-700';
+  };
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex flex-col sm:flex-row items-start gap-4">
-        
         <div className="w-full sm:w-32 sm:h-32 h-48 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
           {oferta.imagen ? (
             <img
@@ -31,12 +32,13 @@ export default function OfertaCard({ oferta }) {
         </div>
         
         <div className="flex-1 w-full">
-          {descuento > 0 && (
-            <span className={`text-xs font-bold px-2 py-1 rounded ${getEtiquetaColor()}`}>
-              Ahorra {descuento}%
+          {/* Etiqueta de descuento eliminada */}
+          
+          {oferta.etiqueta && (
+            <span className="inline-block mt-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+              {oferta.etiqueta}
             </span>
           )}
-          
           <h3 className="text-lg sm:text-xl font-bold text-primary mt-2">
             {oferta.titulo}
           </h3>
@@ -64,15 +66,13 @@ export default function OfertaCard({ oferta }) {
             </p>
           )}
 
-          {oferta.etiqueta && (
-            <span className="inline-block mt-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
-              {oferta.etiqueta}
-            </span>
-          )}
         </div>
       </div>
 
-      <button className="w-full mt-4 py-3 sm:py-3.5 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors text-sm sm:text-base">
+      <button
+        className="w-full mt-4 py-3 sm:py-3.5 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors text-sm sm:text-base"
+        onClick={() => navigate(`/pago-cupon?precio=${oferta.precio_oferta?.toFixed(2)}`)}
+      >
         Comprar Cupón
       </button>
 
