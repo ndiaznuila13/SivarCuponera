@@ -5,41 +5,6 @@ import { useState } from "react";
 
 function CuponCard({ oferta }) {
 
-    const navigate = useNavigate();
-    const [comprando, setComprando] = useState(false);
-
-    const handleComprar = async () => {
-        setComprando(true);
-
-        const { data: { session } } = await supabase.auth.getSession();
-        const userId = session.user.id;
-
-        if (!session) {
-            navigate('/login');
-            return;
-        }
-
-        try {
-            await registrarCompra(oferta, userId);
-        } catch (error) {
-            console.error(error);
-        }
-
-        setComprando(false);
-    };
-
-    const registrarCompra = async (cupon, userId) => {
-        const { error } = await supabase
-            .from('CuponesComprados')
-            .insert({
-                id_cupones: cupon.id_cupones,
-                id: userId,
-                estado: 'Vigente'
-            });
-
-        if (error) throw error;
-    };
-
     return (
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-lg transition-all">
 
@@ -104,7 +69,7 @@ function CuponCard({ oferta }) {
 
             <div className="px-5 pb-5">
                 <button
-                    onClick={handleComprar}
+                    onClick={() => navigate('/pago-cupon', { state: { id_cupon: oferta.id_cupones, precio: oferta.precio_oferta } })}
                     disabled={comprando || oferta.cantidad_cupon === 0}
                     className="w-full py-3.5 bg-oxford-navy text-white font-bold rounded-lg hover:bg-[#003366] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >

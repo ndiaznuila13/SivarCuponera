@@ -69,6 +69,72 @@ export const obtenerCuponesPorUsuario = async (userId) => {
   return data || []
 }
 
+export const comprarCupon = async (id_cupon) => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return { success: false, error: 'Usuario no autenticado' }
+    }
+
+    const { data: cupon, error: errorCupon } = await supabase
+      .from('Cupones')
+      .select('*')
+      .eq('id_cupones', id_cupon)
+      .single()
+
+    if (errorCupon || !cupon) {
+      return { success: false, error: 'Cupón no encontrado' }
+    }
+
+    if (cupon.cantidad_cupon <= 0) {
+      return { success: false, error: 'Stock agotado' }
+    }
+
+    const fechaActual = new Date().toISOString()
+    if (fechaActual < cupon.fecha_inicio || fechaActual > cupon.fecha_fin) {
+      return { success: false, error: 'Oferta no vigente' }
+    }
+
+    const { data: compra, error: errorCompra } = await supabase
+      .from('CuponesComprados')
+      .insert({
+        id_cupon: id_cupon,
+        id: user.id,
+        codigo: codigoUnico,
+        estado: 'disponible'
+      })
+      .select()
+      .single()
+
+    if (errorCompra) {
+      console.error('Error al registrar compra:', errorCompra)
+      return { success: false, error: 'Error al registrar la compra' }
+    }
+
+    const { error: errorStock } = await supabase
+      .from('Cupones')
+      .update({ cantidad_cupon: cupon.cantidad_cupon - 1 })
+      .eq('id_cupones', id_cupon)
+
+    if (errorStock) {
+      console.error('Error al reducir stock:', errorStock)
+    }
+
+    return {
+      success: true,
+      data: {
+        codigo: codigoUnico,
+        compra
+      }
+    }
+
+  } catch (error) {
+    console.error('Error en comprarCupon:', error)
+    return { success: false, error: error.message }
+  }
+}
+
 export const calcularDescuento = (precioRegular, precioOferta) => {
   if (!precioRegular || precioRegular <= 0) return 0
   return Math.round(((precioRegular - precioOferta) / precioRegular) * 100)
