@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import Layout from './components/layout/Layout'
 import Home from './pages/Home'
@@ -19,20 +18,12 @@ function App() {
   return (
     <AuthProvider>
       <Layout>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                rubroSeleccionado={rubroSeleccionado}
-                onSeleccionarRubro={handleSeleccionarRubro}
-                busqueda={busqueda}
-                setBusqueda={setBusqueda}
-              />
-            }
-          />
-          <Route path="/mis-cupones" element={<MisCupones />} />
-        </Routes>
+        <Home
+          rubroSeleccionado={rubroSeleccionado}
+          onSeleccionarRubro={handleSeleccionarRubro}
+          busqueda={busqueda}
+          setBusqueda={setBusqueda}
+        />
       </Layout>
     </AuthProvider>
   )
