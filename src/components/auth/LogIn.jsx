@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { Link } from 'react-router-dom'
 
 export default function LogIn() {
     const [showPassword, setShowPassword] = useState(false);
@@ -68,6 +69,7 @@ export default function LogIn() {
                                 type="email"
                                 placeholder="correo@email.com"
                                 required
+                                name="email"
                                 className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                             />
                         </div>
@@ -82,6 +84,7 @@ export default function LogIn() {
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     required
+                                    name="password"
                                     className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                                 />
 
@@ -128,9 +131,9 @@ export default function LogIn() {
                     {/* Link a Sign Up */}
                     <p className="text-sm text-center text-gray-500 mt-6">
                         ¿No tienes cuenta?{" "}
-                        <span className="text-[var(--color-primary)] font-medium cursor-pointer hover:underline">
+                        <Link to="/signup" className="text-[var(--color-primary)] font-medium cursor-pointer hover:underline">
                             Registrate
-                        </span>
+                        </Link>
                     </p>
 
                 </div>
