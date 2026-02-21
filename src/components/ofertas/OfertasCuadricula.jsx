@@ -10,22 +10,32 @@ export default function OfertasCuadricula({ rubroSeleccionado, busqueda }) {
 
   useEffect(() => {
     cargarOfertas()
-  }, [rubroSeleccionado])
+  }, [rubroSeleccionado, busqueda])
+
 
   const cargarOfertas = async () => {
     try {
       setLoading(true)
       setError(null)
 
-      console.log('Cargando ofertas con categoría:', rubroSeleccionado)
+      console.log('Cargando ofertas - Categoría:', rubroSeleccionado, 'Búsqueda:', busqueda)
 
       const resultado = await obtenerOfertasActivas(rubroSeleccionado)
 
-      console.log('Resultado obtenerOfertasActivas:', resultado)
-
       if (resultado.success) {
-        console.log('Ofertas cargadas:', resultado.data)
-        setOfertas(resultado.data)
+        let ofertasFiltradas = resultado.data
+
+        if (busqueda) {
+          const busquedaLower = busqueda.toLowerCase()
+          ofertasFiltradas = ofertasFiltradas.filter(oferta =>
+            oferta.Tienda?.toLowerCase().includes(busquedaLower) ||
+            oferta.titulo?.toLowerCase().includes(busquedaLower) ||
+            oferta.descripcion?.toLowerCase().includes(busquedaLower)
+          )
+        }
+
+        console.log('Ofertas filtradas:', ofertasFiltradas)
+        setOfertas(ofertasFiltradas)
       } else {
         setError(resultado.error)
       }
