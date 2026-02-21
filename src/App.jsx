@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { AuthProvider } from './context/AuthContext'
+//import { AuthProvider } from './context/AuthContext'
 import Layout from './components/layout/Layout'
 import Home from './pages/Home'
 // import LogIn from './components/auth/LogIn'
@@ -16,7 +16,6 @@ function App() {
   }
 
   return (
-    <AuthProvider>
       <Layout>
         <Home
           rubroSeleccionado={rubroSeleccionado}
@@ -25,7 +24,6 @@ function App() {
           setBusqueda={setBusqueda}
         />
       </Layout>
-    </AuthProvider>
   )
 }
 
