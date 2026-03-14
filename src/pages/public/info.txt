@@ -1,0 +1,2 @@
+Acá irán los componentes y páginas que utilizarán las personas visitantes que no está autenticadas en la cuponera.
+Muchos de estos componentes serán usados para el rol de cliente autenticado, como el Hero, el detalle de oferta individual, etc.

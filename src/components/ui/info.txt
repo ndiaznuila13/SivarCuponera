@@ -1,0 +1,1 @@
+Aquí van componentes primitivos si los usan (átomos o moléculsa: Botones, Input, Modales, Tablas, etc.)

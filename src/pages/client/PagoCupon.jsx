@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { comprarCupon } from '../lib/api';
-import Layout from '../components/layout/Layout';
-import { supabase } from '../lib/supabase';
+import { comprarCupon } from '../../lib/api';
+import Layout from '../../components/ui/Layout';
+import { supabase } from '../../lib/supabase';
 
 const PagoCupon = () => {
   const [success, setSuccess] = useState(false);

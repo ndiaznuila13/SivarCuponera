@@ -1,0 +1,2 @@
+Acá componentes que se compartirán entre todos los roles
+La navbar diferirá dependiendo del rol, asi que no poner una navbar universal

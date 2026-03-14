@@ -1,0 +1,1 @@
+Toda la lógica de Supabase aquí, no en componentes

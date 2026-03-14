@@ -1,0 +1,1 @@
+Funciones puras sin efectos secundarios (formatear fecha, logica de estados de cupón, formatear moneda)

@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import { supabase } from '../services/supabaseClient'
 
 export const obtenerOfertasActivas = async (idCategoria = null, busqueda = null) => {
   try {

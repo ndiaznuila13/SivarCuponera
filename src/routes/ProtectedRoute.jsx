@@ -1,24 +1,28 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-export default function ProtectedRoute() {
-    const [session, setSession] = useState(undefined);
+const redirectMap = {
+  admin:            "/admin/dashboard",
+  company_admin:    "/company/offers",
+  company_employee: "/employee/redeem",
+  client:           "/",
+};
 
-    useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-        });
-    }, []);
+export default function ProtectedRoute({ children, allowedRoles, guestOnly = false }) {
+  const { session, role, loading } = useAuth();
 
-    if (session === undefined) {
-        return <div className="text-center mt-10">Cargando...</div>;
-    }
+  if (loading) return null;
 
-    // Si hay sesión → mostrar las rutas hijas 
-    if (session) {
-         return <Outlet />; } 
-         
-    // Si no hay sesión → login 
-    return <Navigate to="/login" replace />;
+  if (guestOnly) {
+    if (session) return <Navigate to={redirectMap[role] ?? "/"} replace />;
+    return children;
+  }
+
+  //Este codigo para la redireccion al login debe volver a ser declarado nuevamente en las funciones donde se necesita redirigir al login nuevamente
+
+  if (!session) return <Navigate to="/login" replace />;
+  if (!role) return null; // perfil todavía cargando o falló
+  if (!allowedRoles.includes(role)) return <Navigate to="/" replace />;
+
+  return children;
 }

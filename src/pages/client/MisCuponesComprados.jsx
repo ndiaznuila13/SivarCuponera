@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
-import CuponCard from '../components/cupones/CuponCard'
-import Layout from '../components/layout/Layout'
+import { supabase } from '../../lib/supabase'
+import CuponCard from '../../components/ui/CuponCard'
+import Layout from '../../components/ui/Layout'
 
 export default function MisCuponesComprados() {
   const [cupones, setCupones] = useState([])
