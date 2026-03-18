@@ -15,7 +15,9 @@ export default function OfferFormPage() {
         regular_price: "",
         offer_price: "",
         coupon_limit: "",
+        start_date: "",
         end_date: "",
+        coupon_expiry_date: "",
     });
 
     const [loading, setLoading] = useState(false);
@@ -51,7 +53,9 @@ export default function OfferFormPage() {
                 regular_price: data.regular_price || "",
                 offer_price: data.offer_price || "",
                 coupon_limit: data.coupon_limit || "",
+                start_date: data.start_date || "",
                 end_date: data.end_date || "",
+                coupon_expiry_date: data.coupon_expiry_date || "",
             });
             setOfferStatus(data.status);
             setRejectionReason(data.rejection_reason);
@@ -71,7 +75,7 @@ export default function OfferFormPage() {
         e.preventDefault();
         setErrorMsg("");
 
-        if (!formData.title || !formData.description || !formData.regular_price || !formData.offer_price || !formData.end_date) {
+        if (!formData.title || !formData.description || !formData.regular_price || !formData.offer_price || !formData.start_date || !formData.end_date || !formData.coupon_expiry_date) {
             setErrorMsg("Por favor, completa los campos requeridos.");
             return;
         }
@@ -212,11 +216,35 @@ export default function OfferFormPage() {
                         />
                     </div>
                     <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Fecha de Inicio *</label>
+                        <input
+                            type="date"
+                            name="start_date"
+                            value={formData.start_date}
+                            onChange={handleChange}
+                            className="w-full border p-2 rounded focus:ring-primary outline-none"
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+                    <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">Fecha Límite *</label>
                         <input
                             type="date"
                             name="end_date"
                             value={formData.end_date}
+                            onChange={handleChange}
+                            className="w-full border p-2 rounded focus:ring-primary outline-none"
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Vencimiento de Cupones *</label>
+                        <input
+                            type="date"
+                            name="coupon_expiry_date"
+                            value={formData.coupon_expiry_date}
                             onChange={handleChange}
                             className="w-full border p-2 rounded focus:ring-primary outline-none"
                             required
