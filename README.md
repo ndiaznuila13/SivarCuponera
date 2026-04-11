@@ -179,6 +179,7 @@ SivarCuponera
 │  │  ├─ 006_coupon_purchase_setup.sql
 │  │  ├─ 007_add_product_name.sql
 │  │  ├─ 008_seed_test_data.sql
+│  │  ├─ 010_storage_offer_images_rls.sql
 │  │  └─ README.md
 │  └─ README.md
 ├─ eslint.config.js
@@ -224,7 +225,10 @@ SivarCuponera
 │  │  ├─ admin
 │  │  │  ├─ AdminLayout.jsx
 │  │  │  ├─ CategoriesPage.jsx
+│  │  │  ├─ ClientsPage.jsx
 │  │  │  ├─ CompaniesPage.jsx
+│  │  │  ├─ CompanyAdminsPage.jsx
+│  │  │  ├─ CompanyDetailPage.jsx
 │  │  │  ├─ CompanyFormPage.jsx
 │  │  │  ├─ DashboardPage.jsx
 │  │  │  ├─ info.txt
@@ -242,6 +246,7 @@ SivarCuponera
 │  │  │  ├─ OfferFormPage.jsx
 │  │  │  └─ OffersPage.jsx
 │  │  ├─ employee
+│  │  │  ├─ CanjeCupon.jsx
 │  │  │  └─ info.txt
 │  │  └─ public
 │  │     ├─ ForgotPassword.jsx
@@ -254,6 +259,7 @@ SivarCuponera
 │  │  ├─ AppRouter.jsx
 │  │  └─ ProtectedRoute.jsx
 │  ├─ services
+│  │  ├─ adminService.js
 │  │  ├─ authService.js
 │  │  ├─ categoriesService.js
 │  │  ├─ companiesService.js

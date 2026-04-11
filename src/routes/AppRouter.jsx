@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"
 import ProtectedRoute from "./ProtectedRoute";
 
 //Aquí importan las páginas que se van a desplegar
@@ -39,16 +40,28 @@ import OfferFormPage from "../pages/company/OfferFormPage";
 //Employee
 import CanjeCupon from "../pages/employee/CanjeCupon";
 
+// Componente interno: redirige roles no-cliente fuera del home
+function HomeOrRedirect() {
+  const { session, role, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (session && role === "admin")            return <Navigate to="/admin/dashboard"  replace />;
+  if (session && role === "company_admin")    return <Navigate to="/company/dashboard" replace />;
+  if (session && role === "company_employee") return <Navigate to="/empleado/canje"   replace />;
+
+  // cliente autenticado o visitante anónimo → ve el home
+  return <Home />;
+}
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* ── Sitio público + cliente autenticado ── */}
+        {/* ── Público + cliente ── */}
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          {/* <Route path="/offers/:id" element={<OfferDetailPage />} /> */}
+          <Route path="/" element={<HomeOrRedirect />} />
 
           <Route
             path="/client/coupons"
@@ -58,24 +71,21 @@ export default function AppRouter() {
               </ProtectedRoute>
             }
           />
+
           <Route
-            path="pago-cupon"
-            element={<PagoCupon />}
-          />
-          {/* <Route
-            path="/client/settings"
+            path="/pago-cupon"
             element={
-              <ProtectedRoute allowedRoles={["client"]}>
-                <ClientSettings />
+              <ProtectedRoute requireAuth>
+                <PagoCupon />
               </ProtectedRoute>
             }
-          /> */}
+          />
         </Route>
 
-        {/* ── Auth: solo accesibles sin sesión activa ── */}
-        <Route path="/login" element={<LogIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        {/* ── Auth: solo sin sesión activa ── */}
+        <Route path="/login"           element={<ProtectedRoute guestOnly><LogIn /></ProtectedRoute>} />
+        <Route path="/signup"          element={<ProtectedRoute guestOnly><SignUp /></ProtectedRoute>} />
+        <Route path="/forgot-password" element={<ProtectedRoute guestOnly><ForgotPassword /></ProtectedRoute>} />
 
         {/* ── Reset password: siempre pública ── */}
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -90,18 +100,16 @@ export default function AppRouter() {
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="companies" element={<CompaniesPage />} />
-          <Route path="companies/new" element={<CompanyFormPage />} />
-          <Route path="companies/:id/edit" element={<CompanyFormPage />} />
-          <Route path="companies/:id" element={<CompanyDetailPage />} />
-          <Route path="categories" element={<CategoriesPage />} />
-
-          <Route path="clients" element={<ClientsPage />} />
-          <Route path="company-admins" element={<CompanyAdminsPage />} />
-          {<Route path="offers/review" element={<OffersReviewPage />} />}
-          {/* <Route path="settings"           element={<AdminSettings />} /> */}
-          <Route path="*" element={<div>Página en construcción (Admin)</div>} />
+          <Route path="dashboard"            element={<DashboardPage />} />
+          <Route path="companies"            element={<CompaniesPage />} />
+          <Route path="companies/new"        element={<CompanyFormPage />} />
+          <Route path="companies/:id/edit"   element={<CompanyFormPage />} />
+          <Route path="companies/:id"        element={<CompanyDetailPage />} />
+          <Route path="categories"           element={<CategoriesPage />} />
+          <Route path="clients"              element={<ClientsPage />} />
+          <Route path="company-admins"       element={<CompanyAdminsPage />} />
+          <Route path="offers/review"        element={<OffersReviewPage />} />
+          <Route path="*" element={<div>Página no encontrada</div>} />
         </Route>
 
         {/* ── Company Admin ── */}
@@ -114,11 +122,11 @@ export default function AppRouter() {
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<DashboardPageCompany />} />
-          <Route path="offers" element={<OffersPage />} />
-          <Route path="offers/new" element={<OfferFormPage />} />
-          <Route path="offers/:id/edit" element={<OfferFormPage />} />
-          <Route path="employees" element={<EmployeesPage />} />
+          <Route path="dashboard"          element={<DashboardPageCompany />} />
+          <Route path="offers"             element={<OffersPage />} />
+          <Route path="offers/new"         element={<OfferFormPage />} />
+          <Route path="offers/:id/edit"    element={<OfferFormPage />} />
+          <Route path="employees"          element={<EmployeesPage />} />
         </Route>
 
         {/* ── Empleado ── */}
