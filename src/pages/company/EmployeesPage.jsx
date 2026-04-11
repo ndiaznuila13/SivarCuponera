@@ -86,6 +86,7 @@ export default function EmployeesPage() {
 
             {errorMsg && <p className="text-red-600 mb-4">{errorMsg}</p>}
             {successMsg && <p className="text-green-600 mb-4">{successMsg}</p>}
+            <p className="text-sm text-slate-500 mb-4">En este módulo solo se permite crear y eliminar empleados.</p>
 
             {loading ? (
                 <p>Cargando empleados...</p>
@@ -114,7 +115,7 @@ export default function EmployeesPage() {
                                             onClick={() => handleDelete(emp.id)}
                                             className="text-red-500 hover:text-red-700 font-semibold"
                                         >
-                                            Baja Módulo / Eliminar
+                                            Eliminar
                                         </button>
                                     </td>
                                 </tr>
