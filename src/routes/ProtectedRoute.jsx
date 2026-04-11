@@ -1,28 +1,50 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const redirectMap = {
+const roleRedirect = {
   admin:            "/admin/dashboard",
-  company_admin:    "/company/offers",
-  company_employee: "/employee/redeem",
+  company_admin:    "/company/dashboard",
+  company_employee: "/empleado/canje",
   client:           "/",
 };
 
-export default function ProtectedRoute({ children, allowedRoles, guestOnly = false }) {
+/**
+ * Props:
+ *  - allowedRoles: string[]  → ruta privada por rol
+ *  - guestOnly: bool         → solo accesible sin sesión (login, signup)
+ *  - requireAuth: bool       → requiere sesión, redirige a /signup si no hay
+ */
+export default function ProtectedRoute({
+  children,
+  allowedRoles,
+  guestOnly = false,
+  requireAuth = false,
+}) {
   const { session, role, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) return null;
 
+  // Rutas solo para invitados (login, signup, forgot-password)
   if (guestOnly) {
-    if (session) return <Navigate to={redirectMap[role] ?? "/"} replace />;
+    if (session && role) return <Navigate to={roleRedirect[role] ?? "/"} replace />;
     return children;
   }
 
-  //Este codigo para la redireccion al login debe volver a ser declarado nuevamente en las funciones donde se necesita redirigir al login nuevamente
+  // Rutas que requieren sesión pero sin restricción de rol específico
+  // Ej: pago-cupon → si no hay sesión, va a /signup
+  if (requireAuth) {
+    if (!session) return <Navigate to="/login" state={{ from: location }} replace />;
+    return children;
+  }
 
-  if (!session) return <Navigate to="/login" replace />;
-  if (!role) return null; // perfil todavía cargando o falló
-  if (!allowedRoles.includes(role)) return <Navigate to="/" replace />;
+  // Rutas protegidas por rol
+  if (allowedRoles) {
+    if (!session) return <Navigate to="/signup" state={{ from: location }} replace />;
+    if (!role) return null;
+    if (!allowedRoles.includes(role)) return <Navigate to="/" replace />;
+    return children;
+  }
 
   return children;
 }

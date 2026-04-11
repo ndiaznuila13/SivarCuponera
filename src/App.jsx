@@ -1,30 +1,10 @@
-import { useState } from 'react'
-//import { AuthProvider } from './context/AuthContext'
-import Layout from './components/layout/Layout'
-import Home from './pages/Home'
-// import LogIn from './components/auth/LogIn'
-// import SignUp from './components/auth/SignUp'
-import MisCupones from './components/cupones/MisCupones'
+import { AuthProvider } from "./context/AuthContext";
+import AppRouter from "./routes/AppRouter";
 
-function App() {
-  const [rubroSeleccionado, setRubroSeleccionado] = useState(null)
-  const [busqueda, setBusqueda] = useState('')
-
-  const handleSeleccionarRubro = (idRubro) => {
-    console.log('Categoría seleccionada en App:', idRubro)
-    setRubroSeleccionado(idRubro)
-  }
-
+export default function App() {
   return (
-      <Layout>
-        <Home
-          rubroSeleccionado={rubroSeleccionado}
-          onSeleccionarRubro={handleSeleccionarRubro}
-          busqueda={busqueda}
-          setBusqueda={setBusqueda}
-        />
-      </Layout>
-  )
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  );
 }
-
-export default App

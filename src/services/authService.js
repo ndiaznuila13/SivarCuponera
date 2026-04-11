@@ -26,9 +26,7 @@ export async function signup({ firstName, lastName, phone, email, address, dui, 
   if (error) throw error;
   if (!data.user) throw new Error("No se pudo crear el usuario.");
 
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .insert({
+  const profileData = {
       id:         data.user.id,
       role:       "client",
       first_name: firstName,
@@ -36,11 +34,15 @@ export async function signup({ firstName, lastName, phone, email, address, dui, 
       phone,
       address,
       dui,
-    });
+    };
+
+  const { error:profileError } = await supabase
+    .from("profiles")
+    .insert(profileData)
 
   if (profileError) throw profileError;
 
-  return data;
+  return {...data, profile: profileData};
 }
 
 export async function logout() {

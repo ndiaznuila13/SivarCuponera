@@ -37,12 +37,25 @@ export default function LogIn() {
     }
 
     function handleChange(e) {
+        if (error) setError(null);
         setFormData({ ...formData, [e.target.name]: e.target.value });
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
         setError(null);
+
+        if (!formData.email.trim() || !formData.password) {
+            setError("Por favor, completa todos los campos.");
+            return;
+        }
+
+        const emailRegex = /\S+@\S+\.\S+/;
+        if (!emailRegex.test(formData.email)) {
+            setError("Ingresa un correo electrónico válido.");
+            return;
+        }
+
         setLoading(true);
         try {
             const result = await login(formData.email, formData.password);
@@ -86,7 +99,7 @@ export default function LogIn() {
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -95,11 +108,10 @@ export default function LogIn() {
                             <input
                                 type="email"
                                 placeholder="correo@email.com"
-                                required
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                                className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 ${error && !formData.email ? "border-red-500 ring-red-100" : "border-gray-300 focus:ring-[var(--color-primary)]"}`}
                             />
                         </div>
 
@@ -110,11 +122,10 @@ export default function LogIn() {
                             <div className="relative">
                                 <input
                                     type={showPassword ? "text" : "password"}
-                                    required
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                                    className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 ${error && !formData.password ? "border-red-500 ring-red-100" : "border-gray-300 focus:ring-[var(--color-primary)]"}`}
                                 />
                                 <button
                                     type="button"

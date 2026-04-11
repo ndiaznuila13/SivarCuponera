@@ -2,29 +2,21 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signup } from "../../services/authService";
 
-function validateDUI(dui) {
-  return /^\d{8}-\d$/.test(dui);
-}
-
-function validatePhone(phone) {
-  return /^\d{4}-\d{4}$/.test(phone);
-}
-
 export default function SignUp() {
-  const [formData, setFormData]         = useState({
+  const [formData, setFormData] = useState({
     firstName: "",
-    lastName:  "",
-    phone:     "",
-    dui:       "",
-    email:     "",
-    address:   "",
-    password:  "",
+    lastName: "",
+    phone: "",
+    dui: "",
+    email: "",
+    address: "",
+    password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors]             = useState({});
-  const [serverError, setServerError]   = useState(null);
-  const [loading, setLoading]           = useState(false);
-  const navigate                        = useNavigate();
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,12 +26,47 @@ export default function SignUp() {
   function validate() {
     const newErrors = {};
 
-    if (!validatePhone(formData.phone)) {
-      newErrors.phone = "Ingresa un teléfono válido. Formato: 7777-7777";
+    // Validar Nombres
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "El nombre es obligatorio";
     }
 
-    if (!validateDUI(formData.dui)) {
-      newErrors.dui = "Ingresa un DUI válido. Formato: 00000000-0";
+    // Validar Apellidos
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "El apellido es obligatorio";
+    }
+
+    // Validar Teléfono (Presencia + Formato 0000-0000)
+    if (!formData.phone.trim()) {
+      newErrors.phone = "El teléfono es obligatorio";
+    } else if (!/^\d{4}-\d{4}$/.test(formData.phone)) {
+      newErrors.phone = "Formato inválido. Use: 7777-7777";
+    }
+
+    // Validar DUI (Presencia + Formato 00000000-0)
+    if (!formData.dui.trim()) {
+      newErrors.dui = "El DUI es obligatorio.";
+    } else if (!/^\d{8}-\d$/.test(formData.dui)) {
+      newErrors.dui = "Formato inválido. Use: 00000000-0";
+    }
+
+    // Validar Correo
+    if (!formData.email.trim()) {
+      newErrors.email = "El correo electrónico es obligatorio.";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Ingresa un correo electrónico válido.";
+    }
+
+    // Validar Dirección
+    if (!formData.address.trim()) {
+      newErrors.address = "La dirección de residencia es obligatoria.";
+    }
+
+    // Validar Contraseña
+    if (!formData.password) {
+      newErrors.password = "La contraseña es obligatoria.";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "La contraseña debe tener al menos 6 caracteres.";
     }
 
     return newErrors;
@@ -89,35 +116,39 @@ export default function SignUp() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nombres
+                  Nombre
                 </label>
                 <input
                   type="text"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                  className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${errors.firstName ? "border-red-500" : "border-gray-300"}`}
                 />
+                {errors.firstName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
+                )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Apellidos
+                  Apellido
                 </label>
                 <input
                   type="text"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                  className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${errors.lastName ? "border-red-500" : "border-gray-300"}`}
                 />
+                {errors.lastName && (
+                  <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
+                )}
               </div>
             </div>
 
@@ -131,11 +162,8 @@ export default function SignUp() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  required
                   placeholder="7777-7777"
-                  className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${
-                    errors.phone ? "border-red-400" : "border-gray-300"
-                  }`}
+                  className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${errors.phone ? "border-red-500" : "border-gray-300"}`}
                 />
                 {errors.phone && (
                   <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
@@ -151,12 +179,8 @@ export default function SignUp() {
                   name="dui"
                   value={formData.dui}
                   onChange={handleChange}
-                  required
                   placeholder="00000000-0"
-                  maxLength="10"
-                  className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${
-                    errors.dui ? "border-red-400" : "border-gray-300"
-                  }`}
+                  className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${errors.dui ? "border-red-500" : "border-gray-300"}`}
                 />
                 {errors.dui && (
                   <p className="text-red-500 text-xs mt-1">{errors.dui}</p>
@@ -173,10 +197,12 @@ export default function SignUp() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                required
                 placeholder="correo@email.com"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${errors.email ? "border-red-500" : "border-gray-300"}`}
               />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
             </div>
 
             <div>
@@ -188,9 +214,11 @@ export default function SignUp() {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                required
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${errors.address ? "border-red-500" : "border-gray-300"}`}
               />
+              {errors.address && (
+                <p className="text-red-500 text-xs mt-1">{errors.address}</p>
+              )}
             </div>
 
             <div>
@@ -203,10 +231,11 @@ export default function SignUp() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  required
-                  minLength="6"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-12 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                  className={`w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] ${errors.password ? "border-red-500" : "border-gray-300"}`}
                 />
+                {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+              )}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
