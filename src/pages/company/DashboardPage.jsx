@@ -22,8 +22,17 @@ export default function DashboardPage() {
                 getEmployeesByCompany(profile.company_id)
             ]);
 
-            // Consideramos "Activas" a las ofertas con status "approved"
-            const activeOffersCount = offers?.filter(o => o.status === "approved").length || 0;
+            // Consideramos "Activas" a las ofertas con status "approved" que no estén vencidas ni agotadas
+            const today = new Date();
+            const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            
+            const activeOffersCount = offers?.filter(o => {
+                if (o.status !== "approved") return false;
+                const soldCount = o.coupons?.length || 0;
+                const isSoldOut = o.coupon_limit && soldCount >= o.coupon_limit;
+                const isExpired = o.end_date < todayStr;
+                return !isSoldOut && !isExpired;
+            }).length || 0;
             const employeesCount = employees?.length || 0;
 
             setStats({

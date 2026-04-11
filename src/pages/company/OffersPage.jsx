@@ -40,9 +40,25 @@ export default function OffersPage() {
         }
     };
 
+    const getOfferStatusFront = (offer) => {
+        if (offer.status !== "approved") return offer.status;
+
+        const soldCount = offer.coupons?.length || 0;
+        const isSoldOut = offer.coupon_limit && soldCount >= offer.coupon_limit;
+        
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const isExpired = offer.end_date < todayStr;
+
+        if (isSoldOut || isExpired) {
+            return "finished";
+        }
+        return "approved";
+    };
+
     const filteredOffers = offers.filter((o) => {
         if (filter === "all") return true;
-        return o.status === filter;
+        return getOfferStatusFront(o) === filter;
     });
 
     return (
@@ -58,7 +74,7 @@ export default function OffersPage() {
             </div>
 
             <div className="flex space-x-2 mb-6 border-b border-slate-200 pb-2">
-                {["all", "pending_approval", "approved", "rejected", "discarded"].map((status) => (
+                {["all", "pending_approval", "approved", "finished", "rejected", "discarded"].map((status) => (
                     <button
                         key={status}
                         onClick={() => setFilter(status)}
@@ -69,8 +85,9 @@ export default function OffersPage() {
                     >
                         {status === "all" ? "Todas" :
                             status === "pending_approval" ? "Pendientes" :
-                                status === "approved" ? "Aprobadas" :
-                                    status === "rejected" ? "Rechazadas" : "Descartadas"}
+                                status === "approved" ? "Activas" :
+                                    status === "finished" ? "Finalizadas" :
+                                        status === "rejected" ? "Rechazadas" : "Descartadas"}
                     </button>
                 ))}
             </div>
@@ -85,14 +102,17 @@ export default function OffersPage() {
                         <div key={offer.id} className="border border-slate-200 rounded-lg p-5 shadow-sm bg-white relative">
                             <div className="flex justify-between items-start mb-2">
                                 <h3 className="font-bold text-lg">{offer.title}</h3>
-                                <span className={`text-xs px-2 py-1 rounded-full font-bold ${offer.status === "approved" ? "bg-green-100 text-green-800" :
-                                        offer.status === "pending_approval" ? "bg-yellow-100 text-yellow-800" :
-                                            offer.status === "rejected" ? "bg-red-100 text-red-800" :
-                                                "bg-gray-100 text-gray-800"
-                                    }`}>
-                                    {offer.status === "pending_approval" ? "Pendiente" :
-                                        offer.status === "approved" ? "Aprobada" :
-                                            offer.status === "rejected" ? "Rechazada" : "Descartada"}
+                                <span className={`text-xs px-2 py-1 rounded-full font-bold ${
+                                    getOfferStatusFront(offer) === "approved" ? "bg-green-100 text-green-800" :
+                                    getOfferStatusFront(offer) === "finished" ? "bg-slate-200 text-slate-700 border border-slate-300" :
+                                    offer.status === "pending_approval" ? "bg-yellow-100 text-yellow-800" :
+                                    offer.status === "rejected" ? "bg-red-100 text-red-800" :
+                                    "bg-gray-100 text-gray-800"
+                                }`}>
+                                    {getOfferStatusFront(offer) === "pending_approval" ? "Pendiente" :
+                                        getOfferStatusFront(offer) === "approved" ? "Activa" :
+                                            getOfferStatusFront(offer) === "finished" ? "Finalizada" :
+                                                getOfferStatusFront(offer) === "rejected" ? "Rechazada" : "Descartada"}
                                 </span>
                             </div>
                             <p className="text-sm text-slate-600 mb-4 line-clamp-2">{offer.description}</p>
@@ -121,8 +141,11 @@ export default function OffersPage() {
                                         Descartar
                                     </button>
                                 )}
-                                {offer.status === "approved" && (
-                                    <span className="text-xs text-slate-400">Oferta Activa</span>
+                                {getOfferStatusFront(offer) === "approved" && (
+                                    <span className="text-xs text-green-600 font-semibold border border-green-200 bg-green-50 px-2 py-1 rounded">Oferta Activa</span>
+                                )}
+                                {getOfferStatusFront(offer) === "finished" && (
+                                    <span className="text-xs text-slate-600 font-semibold border border-slate-200 bg-slate-50 px-2 py-1 rounded">Ya Vencida / Agotada</span>
                                 )}
                             </div>
                         </div>

@@ -44,7 +44,7 @@ export const rejectOffer = async (id, reason) => {
 export const getOffersByCompany = async (companyId) => {
   const { data, error } = await supabase
     .from('offers')
-    .select('*')
+    .select('*, coupons(id)')
     .eq('company_id', companyId)
     .order('created_at', { ascending: false });
 
