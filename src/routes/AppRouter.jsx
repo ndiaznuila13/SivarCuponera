@@ -30,20 +30,6 @@ import OfferFormPage from "../pages/company/OfferFormPage";
 
 import CanjeCupon from "../pages/employee/CanjeCupon";
 
-// Componente interno: redirige roles no-cliente fuera del home
-function HomeOrRedirect() {
-  const { session, role, loading } = useAuth();
-
-  if (loading) return null;
-
-  if (session && role === "admin")            return <Navigate to="/admin/dashboard"  replace />;
-  if (session && role === "company_admin")    return <Navigate to="/company/dashboard" replace />;
-  if (session && role === "company_employee") return <Navigate to="/empleado/canje"   replace />;
-
-  // cliente autenticado o visitante anónimo → ve el home
-  return <Home />;
-}
-
 export default function AppRouter() {
   return (
     <BrowserRouter>
