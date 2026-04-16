@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getOffersByCompany, discardOffer } from "../../services/offersService";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import FeedbackMessage from "../../components/common/FeedbackMessage";
+import {
+    getCompanyOfferComputedStatus,
+    getOfferStatusBadgeClass,
+    getOfferStatusLabel,
+} from "../../utils/offerStatus";
 
 export default function OffersPage() {
     const { profile } = useAuth();
@@ -9,6 +16,8 @@ export default function OffersPage() {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState("all");
+    const [feedback, setFeedback] = useState({ type: "info", message: "" });
+    const [offerToDiscard, setOfferToDiscard] = useState(null);
 
     useEffect(() => {
         if (profile?.company_id) {
@@ -23,42 +32,38 @@ export default function OffersPage() {
             setOffers(data || []);
         } catch (error) {
             console.error("Error al cargar ofertas:", error);
+            setFeedback({ type: "error", message: "No se pudieron cargar las ofertas." });
         } finally {
             setLoading(false);
         }
     };
 
-    const handleDiscard = async (id) => {
-        if (window.confirm("¿Seguro que deseas descartar esta oferta?")) {
-            try {
-                await discardOffer(id);
-                loadOffers();
-            } catch (error) {
-                console.error("Error al descartar:", error);
-                alert("No se pudo descartar la oferta.");
-            }
+    const handleDiscardClick = (offer) => {
+        setOfferToDiscard(offer);
+    };
+
+    const confirmDiscard = async () => {
+        if (!offerToDiscard) return;
+        try {
+            await discardOffer(offerToDiscard.id);
+            setFeedback({ type: "success", message: "Oferta descartada correctamente." });
+            loadOffers();
+        } catch (error) {
+            console.error("Error al descartar:", error);
+            setFeedback({ type: "error", message: "No se pudo descartar la oferta." });
+        } finally {
+            setOfferToDiscard(null);
         }
     };
 
-    const getOfferStatusFront = (offer) => {
-        if (offer.status !== "approved") return offer.status;
+    const offersWithComputedStatus = offers.map((offer) => ({
+        ...offer,
+        computedStatus: getCompanyOfferComputedStatus(offer),
+    }));
 
-        const soldCount = offer.coupons?.length || 0;
-        const isSoldOut = offer.coupon_limit && soldCount >= offer.coupon_limit;
-        
-        const today = new Date();
-        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-        const isExpired = offer.end_date < todayStr;
-
-        if (isSoldOut || isExpired) {
-            return "finished";
-        }
-        return "approved";
-    };
-
-    const filteredOffers = offers.filter((o) => {
+    const filteredOffers = offersWithComputedStatus.filter((o) => {
         if (filter === "all") return true;
-        return getOfferStatusFront(o) === filter;
+        return o.computedStatus === filter;
     });
 
     return (
@@ -72,6 +77,8 @@ export default function OffersPage() {
                     + Nueva Oferta
                 </Link>
             </div>
+
+            <FeedbackMessage type={feedback.type} message={feedback.message} />
 
             <div className="flex space-x-2 mb-6 border-b border-slate-200 pb-2">
                 {["all", "pending_approval", "approved", "finished", "rejected", "discarded"].map((status) => (
@@ -102,17 +109,8 @@ export default function OffersPage() {
                         <div key={offer.id} className="border border-slate-200 rounded-lg p-5 shadow-sm bg-white relative">
                             <div className="flex justify-between items-start mb-2">
                                 <h3 className="font-bold text-lg">{offer.title}</h3>
-                                <span className={`text-xs px-2 py-1 rounded-full font-bold ${
-                                    getOfferStatusFront(offer) === "approved" ? "bg-green-100 text-green-800" :
-                                    getOfferStatusFront(offer) === "finished" ? "bg-slate-200 text-slate-700 border border-slate-300" :
-                                    offer.status === "pending_approval" ? "bg-yellow-100 text-yellow-800" :
-                                    offer.status === "rejected" ? "bg-red-100 text-red-800" :
-                                    "bg-gray-100 text-gray-800"
-                                }`}>
-                                    {getOfferStatusFront(offer) === "pending_approval" ? "Pendiente" :
-                                        getOfferStatusFront(offer) === "approved" ? "Activa" :
-                                            getOfferStatusFront(offer) === "finished" ? "Finalizada" :
-                                                getOfferStatusFront(offer) === "rejected" ? "Rechazada" : "Descartada"}
+                                <span className={`text-xs px-2 py-1 rounded-full font-bold ${getOfferStatusBadgeClass(offer.computedStatus)}`}>
+                                    {getOfferStatusLabel(offer.computedStatus)}
                                 </span>
                             </div>
                             <p className="text-sm text-slate-600 mb-4 line-clamp-2">{offer.description}</p>
@@ -135,16 +133,16 @@ export default function OffersPage() {
                                 )}
                                 {offer.status === "rejected" && (
                                     <button
-                                        onClick={() => handleDiscard(offer.id)}
+                                        onClick={() => handleDiscardClick(offer)}
                                         className="text-red-500 hover:text-red-700 font-medium text-sm px-3 py-1 border border-red-500 rounded"
                                     >
                                         Descartar
                                     </button>
                                 )}
-                                {getOfferStatusFront(offer) === "approved" && (
+                                {offer.computedStatus === "approved" && (
                                     <span className="text-xs text-green-600 font-semibold border border-green-200 bg-green-50 px-2 py-1 rounded">Oferta Activa</span>
                                 )}
-                                {getOfferStatusFront(offer) === "finished" && (
+                                {offer.computedStatus === "finished" && (
                                     <span className="text-xs text-slate-600 font-semibold border border-slate-200 bg-slate-50 px-2 py-1 rounded">Ya Vencida / Agotada</span>
                                 )}
                             </div>
@@ -152,6 +150,16 @@ export default function OffersPage() {
                     ))}
                 </div>
             )}
+
+            <ConfirmDialog
+                open={Boolean(offerToDiscard)}
+                title="Descartar oferta"
+                message={offerToDiscard ? `¿Seguro que deseas descartar la oferta \"${offerToDiscard.title}\"?` : ""}
+                confirmText="Descartar"
+                danger
+                onConfirm={confirmDiscard}
+                onCancel={() => setOfferToDiscard(null)}
+            />
         </div>
     );
 }

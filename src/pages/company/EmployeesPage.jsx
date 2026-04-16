@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { getEmployeesByCompany, deleteEmployeeProfile } from "../../services/employeesService";
 import { createEmployee } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import FeedbackMessage from "../../components/common/FeedbackMessage";
 
 export default function EmployeesPage() {
     const { profile } = useAuth();
@@ -10,6 +12,7 @@ export default function EmployeesPage() {
     const [showModal, setShowModal] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
+    const [employeeToDelete, setEmployeeToDelete] = useState(null);
 
     const [formData, setFormData] = useState({
         firstName: "",
@@ -60,15 +63,22 @@ export default function EmployeesPage() {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (window.confirm("¿Seguro que deseas eliminar este empleado? Esto revocará su acceso.")) {
-            try {
-                await deleteEmployeeProfile(id);
-                loadEmployees();
-            } catch (error) {
-                console.error(error);
-                alert("Error al eliminar empleado");
-            }
+    const handleDeleteClick = (employee) => {
+        setEmployeeToDelete(employee);
+    };
+
+    const confirmDelete = async () => {
+        if (!employeeToDelete) return;
+        try {
+            await deleteEmployeeProfile(employeeToDelete.id);
+            setSuccessMsg("Empleado eliminado correctamente.");
+            setErrorMsg("");
+            loadEmployees();
+        } catch (error) {
+            console.error(error);
+            setErrorMsg("Error al eliminar empleado");
+        } finally {
+            setEmployeeToDelete(null);
         }
     };
 
@@ -84,8 +94,8 @@ export default function EmployeesPage() {
                 </button>
             </div>
 
-            {errorMsg && <p className="text-red-600 mb-4">{errorMsg}</p>}
-            {successMsg && <p className="text-green-600 mb-4">{successMsg}</p>}
+            <FeedbackMessage type="error" message={errorMsg} />
+            <FeedbackMessage type="success" message={successMsg} />
             <p className="text-sm text-slate-500 mb-4">En este módulo solo se permite crear y eliminar empleados.</p>
 
             {loading ? (
@@ -112,7 +122,7 @@ export default function EmployeesPage() {
                                     <td className="p-3 text-sm">
                                         {/* Al ser Auth de Supabase, cambiar contraseñas u otros datos requiere más controles. Para el ejemplo, borramos */}
                                         <button
-                                            onClick={() => handleDelete(emp.id)}
+                                            onClick={() => handleDeleteClick(emp)}
                                             className="text-red-500 hover:text-red-700 font-semibold"
                                         >
                                             Eliminar
@@ -197,6 +207,16 @@ export default function EmployeesPage() {
                     </div>
                 </div>
             )}
+
+            <ConfirmDialog
+                open={Boolean(employeeToDelete)}
+                title="Eliminar empleado"
+                message={employeeToDelete ? `¿Seguro que deseas eliminar a ${employeeToDelete.first_name} ${employeeToDelete.last_name}? Esto revocará su acceso.` : ""}
+                confirmText="Eliminar"
+                danger
+                onConfirm={confirmDelete}
+                onCancel={() => setEmployeeToDelete(null)}
+            />
         </div>
     );
 }

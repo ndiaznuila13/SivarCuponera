@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { getPendingOffers, approveOffer, rejectOffer } from "../../services/offersService";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import FeedbackMessage from "../../components/common/FeedbackMessage";
 
 export default function OffersReviewPage() {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [feedback, setFeedback] = useState({ type: "info", message: "" });
+  const [approveId, setApproveId] = useState(null);
   
   // Estado para el modal de rechazo
   const [rejectId, setRejectId] = useState(null);
@@ -27,15 +31,20 @@ export default function OffersReviewPage() {
     }
   };
 
-  const handleApprove = async (id) => {
-    if (!confirm("¿Aprobar esta oferta? Se publicará inmediatamente.")) return;
+  const handleApproveClick = (id) => {
+    setApproveId(id);
+  };
+
+  const confirmApprove = async () => {
+    if (!approveId) return;
     try {
-      await approveOffer(id);
-      // Recargar lista
-      setOffers(offers.filter(o => o.id !== id));
-      alert("Oferta aprobada exitosamente.");
+      await approveOffer(approveId);
+      setOffers(offers.filter(o => o.id !== approveId));
+      setFeedback({ type: "success", message: "Oferta aprobada exitosamente." });
     } catch (err) {
-      alert("Error al aprobar: " + err.message);
+      setFeedback({ type: "error", message: "Error al aprobar: " + err.message });
+    } finally {
+      setApproveId(null);
     }
   };
 
@@ -45,15 +54,18 @@ export default function OffersReviewPage() {
   };
 
   const confirmReject = async () => {
-    if (!rejectReason.trim()) return alert("Debes ingresar una razón de rechazo.");
+    if (!rejectReason.trim()) {
+      setFeedback({ type: "error", message: "Debes ingresar una razón de rechazo." });
+      return;
+    }
     
     try {
       await rejectOffer(rejectId, rejectReason);
       setOffers(offers.filter(o => o.id !== rejectId));
       setRejectId(null); // Cerrar modal
-      alert("Oferta rechazada.");
+      setFeedback({ type: "success", message: "Oferta rechazada." });
     } catch (err) {
-      alert("Error al rechazar: " + err.message);
+      setFeedback({ type: "error", message: "Error al rechazar: " + err.message });
     }
   };
 
@@ -64,6 +76,7 @@ export default function OffersReviewPage() {
       <h1 className="text-2xl font-bold mb-6 text-slate-800">Revisión de Ofertas</h1>
 
       {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
+      <FeedbackMessage type={feedback.type} message={feedback.message} />
 
       {offers.length === 0 ? (
         <div className="text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-300">
@@ -105,7 +118,7 @@ export default function OffersReviewPage() {
               {/* Botones de Acción */}
               <div className="flex flex-col gap-3 justify-center border-l md:pl-6 border-slate-100 min-w-[150px]">
                 <button
-                  onClick={() => handleApprove(offer.id)}
+                  onClick={() => handleApproveClick(offer.id)}
                   className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition shadow-sm text-center"
                 >
                   Aprobar
@@ -150,6 +163,15 @@ export default function OffersReviewPage() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={Boolean(approveId)}
+        title="Aprobar oferta"
+        message="¿Aprobar esta oferta? Se publicará inmediatamente."
+        confirmText="Aprobar"
+        onConfirm={confirmApprove}
+        onCancel={() => setApproveId(null)}
+      />
     </div>
   );
 }

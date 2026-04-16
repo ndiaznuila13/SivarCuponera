@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getCategories, createCategory, updateCategory, deleteCategory } from "../../services/categoriesService";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import FeedbackMessage from "../../components/common/FeedbackMessage";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState([]);
@@ -9,6 +11,8 @@ export default function CategoriesPage() {
   const [formData, setFormData] = useState("");
   const [editingId, setEditingId] = useState(null); // Si es null, estamos creando. Si tiene ID, editando.
   const [error, setError] = useState(null);
+  const [feedback, setFeedback] = useState({ type: "info", message: "" });
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   useEffect(() => {
     loadCategories();
@@ -34,17 +38,17 @@ export default function CategoriesPage() {
       if (editingId) {
         // MODO EDICIÓN
         await updateCategory(editingId, formData);
-        alert("Rubro actualizado correctamente");
+        setFeedback({ type: "success", message: "Rubro actualizado correctamente." });
       } else {
         // MODO CREACIÓN
         await createCategory(formData);
-        alert("Rubro creado correctamente");
+        setFeedback({ type: "success", message: "Rubro creado correctamente." });
       }
       setFormData("");
       setEditingId(null);
       loadCategories();
     } catch (err) {
-      alert("Error al guardar: " + err.message);
+      setFeedback({ type: "error", message: "Error al guardar: " + err.message });
     }
   };
 
@@ -58,13 +62,20 @@ export default function CategoriesPage() {
     setFormData("");
   };
 
-  const handleDelete = async (id, name) => {
-    if (!window.confirm(`¿Eliminar rubro "${name}"?`)) return;
+  const handleDeleteClick = (id, name) => {
+    setCategoryToDelete({ id, name });
+  };
+
+  const confirmDelete = async () => {
+    if (!categoryToDelete) return;
     try {
-      await deleteCategory(id);
+      await deleteCategory(categoryToDelete.id);
+      setFeedback({ type: "success", message: "Rubro eliminado correctamente." });
       loadCategories();
     } catch (err) {
-      alert("No se pudo eliminar (quizás ya tiene empresas asociadas).");
+      setFeedback({ type: "error", message: "No se pudo eliminar (quizás ya tiene empresas asociadas)." });
+    } finally {
+      setCategoryToDelete(null);
     }
   };
 
@@ -73,6 +84,7 @@ export default function CategoriesPage() {
       <h1 className="text-2xl font-bold mb-6">Gestión de Rubros</h1>
 
       {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
+      <FeedbackMessage type={feedback.type} message={feedback.message} />
 
       {/* Formulario Reutilizable (Crear / Editar) */}
       <form onSubmit={handleSubmit} className={`flex gap-4 mb-8 items-end p-4 rounded-lg border ${editingId ? 'bg-yellow-50 border-yellow-200' : 'bg-slate-50'}`}>
@@ -131,7 +143,7 @@ export default function CategoriesPage() {
                     Editar
                   </button>
                   <button
-                    onClick={() => handleDelete(cat.id, cat.name)}
+                    onClick={() => handleDeleteClick(cat.id, cat.name)}
                     className="text-red-600 hover:text-red-900"
                   >
                     Eliminar
@@ -142,6 +154,16 @@ export default function CategoriesPage() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={Boolean(categoryToDelete)}
+        title="Eliminar rubro"
+        message={categoryToDelete ? `¿Eliminar rubro "${categoryToDelete.name}"?` : ""}
+        confirmText="Eliminar"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setCategoryToDelete(null)}
+      />
     </div>
   );
 }

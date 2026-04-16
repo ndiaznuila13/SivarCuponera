@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getCompanies, deleteCompany } from "../../services/companiesService";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import FeedbackMessage from "../../components/common/FeedbackMessage";
 
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState({ type: "info", message: "" });
+  const [companyToDelete, setCompanyToDelete] = useState(null);
 
   useEffect(() => {
     loadCompanies();
@@ -16,20 +20,26 @@ export default function CompaniesPage() {
       const data = await getCompanies();
       setCompanies(data);
     } catch (error) {
-      alert("Error al cargar empresas: " + error.message);
+      setFeedback({ type: "error", message: "Error al cargar empresas: " + error.message });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id, name) => {
-    if (!window.confirm(`¿Estás seguro de eliminar a "${name}"?`)) return;
+  const handleDeleteClick = (id, name) => {
+    setCompanyToDelete({ id, name });
+  };
 
+  const confirmDelete = async () => {
+    if (!companyToDelete) return;
     try {
-      await deleteCompany(id);
+      await deleteCompany(companyToDelete.id);
+      setFeedback({ type: "success", message: "Empresa eliminada correctamente." });
       loadCompanies();
     } catch (error) {
-      alert("No se pudo eliminar la empresa: " + error.message);
+      setFeedback({ type: "error", message: "No se pudo eliminar la empresa: " + error.message });
+    } finally {
+      setCompanyToDelete(null);
     }
   };
 
@@ -46,6 +56,8 @@ export default function CompaniesPage() {
           + Nueva Empresa
         </Link>
       </div>
+
+      <FeedbackMessage type={feedback.type} message={feedback.message} />
 
       <div className="overflow-x-auto border rounded-lg bg-white shadow-sm">
         <table className="min-w-full divide-y divide-gray-200">
@@ -88,7 +100,7 @@ export default function CompaniesPage() {
                     Editar
                   </Link>
                   <button
-                    onClick={() => handleDelete(company.id, company.name)}
+                    onClick={() => handleDeleteClick(company.id, company.name)}
                     className="text-red-600 hover:text-red-900"
                   >
                     Eliminar
@@ -106,6 +118,16 @@ export default function CompaniesPage() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={Boolean(companyToDelete)}
+        title="Eliminar empresa"
+        message={companyToDelete ? `¿Estás seguro de eliminar a "${companyToDelete.name}"?` : ""}
+        confirmText="Eliminar"
+        danger
+        onConfirm={confirmDelete}
+        onCancel={() => setCompanyToDelete(null)}
+      />
     </div>
   );
 }
